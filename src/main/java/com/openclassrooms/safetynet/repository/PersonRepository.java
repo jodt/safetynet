@@ -18,4 +18,33 @@ public class PersonRepository {
     public void setPersons(List<Person> persons){
         this.persons = persons;
     }
+
+    public Person findPersonByFirstNameAndLastName(String firstName,String lastName){
+        Person personResult = null;
+        for(Person person : this.persons){
+            if (person.getFirstName().toLowerCase().equals(firstName.toLowerCase()) && person.getLastName().toLowerCase().equals(lastName.toLowerCase())){
+                personResult = person;
+            }
+        }
+        return personResult;
+    }
+
+    public Person addPerson(Person person){
+        this.persons.add(person);
+        return person;
+    }
+
+    public Boolean deletePerson(Person person){
+        return this.persons.remove(person);
+    }
+
+    public void updatePerson(Person person) {
+        Person updatePerson = this.findPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName());
+        updatePerson.setAddress(person.getAddress());
+        updatePerson.setCity(person.getCity());
+        updatePerson.setPhone(person.getPhone());
+        updatePerson.setZip(person.getZip());
+        updatePerson.setEmail(person.getEmail());
+        }
+
 }
