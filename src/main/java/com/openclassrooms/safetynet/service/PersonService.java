@@ -1,5 +1,6 @@
 package com.openclassrooms.safetynet.service;
 
+import com.openclassrooms.safetynet.exception.PersonNotFoundException;
 import com.openclassrooms.safetynet.model.Person;
 import com.openclassrooms.safetynet.repository.PersonRepository;
 import org.springframework.stereotype.Service;
@@ -33,20 +34,21 @@ public class PersonService {
         return person;
     }
 
-    public Person updatePerson(Person person){
+    public Person updatePerson(Person person) throws PersonNotFoundException {
+        this.findPersonByFirstNameAndLastName(person.getFirstName(),person.getLastName());
         this.personRepository.updatePerson(person);
         return person;
     }
-    public boolean deletePerson(String firstName, String lastName){
-        Boolean isDeleted = false;
-        Person personFound = personRepository.findPersonByFirstNameAndLastName(firstName,lastName);
-        if (personFound != null){
-            isDeleted = this.personRepository.deletePerson(personFound);
-        }
-        return isDeleted;
+    public void deletePerson(String firstName, String lastName) throws Exception {
+        Person personFound = this.findPersonByFirstNameAndLastName(firstName,lastName);
+        this.personRepository.deletePerson(personFound);
     }
 
-    public Person findPersonByFirstNameAndLastName(String firstname, String lastName){
-        return this.personRepository.findPersonByFirstNameAndLastName(firstname,lastName);
+    private Person findPersonByFirstNameAndLastName(String firstName, String lastName) throws PersonNotFoundException {
+        Person personFound = this.personRepository.findPersonByFirstNameAndLastName(firstName,lastName);
+        if(personFound == null){
+            throw new PersonNotFoundException("Personne non trouvée avec le prénom " + firstName + " et le nom "+ lastName) ;
+        }
+        return personFound;
     }
 }
