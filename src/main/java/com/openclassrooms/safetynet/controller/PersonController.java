@@ -1,7 +1,6 @@
 package com.openclassrooms.safetynet.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.openclassrooms.safetynet.exception.PersonNotFoundException;
 import com.openclassrooms.safetynet.model.Person;
 import com.openclassrooms.safetynet.repository.PersonRepository;
 import com.openclassrooms.safetynet.service.PersonService;
@@ -10,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.http.HttpResponse;
+import java.util.List;
 
 @RestController
 public class PersonController {
@@ -23,10 +23,8 @@ public class PersonController {
     }
 
     @GetMapping("/")
-    public String getPersons(){
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String result = gson.toJson(personRepository.getPersons());
-        return result;
+    public List<Person>getPersons() throws Exception {
+        return this.personRepository.getPersons();
     }
 
     @PostMapping("/person")
@@ -36,30 +34,19 @@ public class PersonController {
     }
 
     @PutMapping("/person")
-    public ResponseEntity<?> updatePerson(@RequestBody Person person){
-        Person updatePerson = this.personService.findPersonByFirstNameAndLastName(person.getFirstName(),person.getLastName());
-        if (updatePerson != null){
-            this.personService.updatePerson(person);
-            return new ResponseEntity<>(person, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>("Personne non trouvée", HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> updatePerson(@RequestBody Person person) throws PersonNotFoundException {
+        this.personService.updatePerson(person);
+        return new ResponseEntity<>(person, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/person")
-    public ResponseEntity<String> deletePerson(@RequestParam String firstName, @RequestParam String lastName){
-        boolean isDeleted = false;
-        isDeleted = this.personService.deletePerson(firstName,lastName);
-        if (isDeleted){
-            return new ResponseEntity<>("Person deleted", HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(firstName + " " +lastName + " Not Found", HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<String> deletePerson(@RequestParam String firstName, @RequestParam String lastName) throws Exception {
+        this.personService.deletePerson(firstName,lastName);
+        return new ResponseEntity<>("Person deleted", HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/communityEmail")
-    public ResponseEntity<String> getCommunityEmail(@RequestParam String city){
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return new ResponseEntity<>(gson.toJson(personService.getMailsByCity(city)), HttpStatus.OK) ;
+    public List<String> getCommunityEmail(@RequestParam String city){
+        return this.personService.getMailsByCity(city);
     }
 }
