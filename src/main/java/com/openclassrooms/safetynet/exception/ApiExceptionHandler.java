@@ -20,4 +20,14 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException,HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(value = {MailsNotFoundException.class})
+    public ResponseEntity<Object> handleMailsNotFoundException(MailsNotFoundException e){
+        ApiException apiException = new ApiException(
+                e.getMessage(),
+                HttpStatus.NOT_FOUND,
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(apiException,HttpStatus.NOT_FOUND);
+    }
+
 }
