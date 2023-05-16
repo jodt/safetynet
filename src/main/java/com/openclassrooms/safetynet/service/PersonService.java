@@ -35,21 +35,28 @@ public class PersonService {
             logger.error("No email found for people living in {}", city);
             throw new MailsNotFoundException("Aucun mail trouvé pour la ville " + city);
         }
+        logger.debug("emails successfully collected");
         return mails;
     }
 
     public Person addPerson(Person person){
+        logger.debug("Try to add the person {} {}", person.getFirstName(), person.getLastName());
         this.personRepository.addPerson(person);
+        logger.debug("Person successfully added");
         return person;
     }
 
     public Person updatePerson(Person person) throws PersonNotFoundException {
+        logger.debug("Try to update the person {} {}", person.getFirstName(), person.getLastName());
         this.findPersonByFirstNameAndLastName(person.getFirstName(),person.getLastName());
         this.personRepository.updatePerson(person);
+        logger.debug("Person successfully updated");
         return person;
     }
     public void deletePerson(String firstName, String lastName) throws Exception {
+        logger.debug("Try to delete the person {} {}", firstName,lastName);
         Person personFound = this.findPersonByFirstNameAndLastName(firstName,lastName);
+        logger.debug("Person successfully deleted");
         this.personRepository.deletePerson(personFound);
     }
 
@@ -60,6 +67,7 @@ public class PersonService {
             logger.error("Person not found with firstname {} and lastname {}", firstName, lastName);
             throw new PersonNotFoundException("Personne non trouvée avec le prénom " + firstName + " et le nom "+ lastName) ;
         }
+        logger.debug("Person found with firstname {} and lastname {}", firstName, lastName);
         return personFound;
     }
 }

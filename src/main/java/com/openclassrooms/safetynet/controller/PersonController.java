@@ -33,22 +33,22 @@ public class PersonController {
 
     @PostMapping("/person")
     public ResponseEntity<Person> addPerson(@RequestBody Person person) {
-        this.personService.addPerson(person);
         logger.info("Start process to add a new person {} {}", person.getFirstName(), person.getLastName());
+        this.personService.addPerson(person);
         return new ResponseEntity<>(person, HttpStatus.CREATED);
     }
 
     @PutMapping("/person")
     public ResponseEntity<Object> updatePerson(@RequestBody Person person) throws PersonNotFoundException {
-        this.personService.updatePerson(person);
         logger.info("Start process to update the person with firstname {} and lastname {}", person.getFirstName(), person.getLastName());
+        this.personService.updatePerson(person);
         return new ResponseEntity<>(person, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/person")
     public ResponseEntity<Object> deletePerson(@RequestParam String firstName, @RequestParam String lastName) throws Exception {
-        this.personService.deletePerson(firstName,lastName);
         logger.info("Start process to delete the person: {} {}", firstName,lastName);
+        this.personService.deletePerson(firstName,lastName);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
