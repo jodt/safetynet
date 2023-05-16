@@ -35,6 +35,7 @@ public class PersonController {
     public ResponseEntity<Person> addPerson(@RequestBody Person person) {
         logger.info("Start process to add a new person {} {}", person.getFirstName(), person.getLastName());
         this.personService.addPerson(person);
+        logger.info("Process end successfully");
         return new ResponseEntity<>(person, HttpStatus.CREATED);
     }
 
@@ -42,6 +43,7 @@ public class PersonController {
     public ResponseEntity<Object> updatePerson(@RequestBody Person person) throws PersonNotFoundException {
         logger.info("Start process to update the person with firstname {} and lastname {}", person.getFirstName(), person.getLastName());
         this.personService.updatePerson(person);
+        logger.info("Process end successfully");
         return new ResponseEntity<>(person, HttpStatus.CREATED);
     }
 
@@ -49,6 +51,7 @@ public class PersonController {
     public ResponseEntity<Object> deletePerson(@RequestParam String firstName, @RequestParam String lastName) throws Exception {
         logger.info("Start process to delete the person: {} {}", firstName,lastName);
         this.personService.deletePerson(firstName,lastName);
+        logger.info("Process end successfully");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
