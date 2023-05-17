@@ -34,8 +34,8 @@ public class PersonRepository {
         return person;
     }
 
-    public Boolean deletePerson(Person person){
-        return this.persons.remove(person);
+    public void deletePerson(Person person){
+        this.persons.remove(person);
     }
 
     public void updatePerson(Person person) {
