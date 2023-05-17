@@ -40,5 +40,15 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException,HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(value = {MedicalRecordNotFoundException.class})
+    public ResponseEntity<Object> handleMedicalNotFoundException(MedicalRecordNotFoundException e){
+        ApiException apiException = new ApiException(
+                e.getMessage(),
+                HttpStatus.NOT_FOUND,
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(apiException,HttpStatus.NOT_FOUND);
+    }
+
 
 }
