@@ -44,7 +44,7 @@ public class PersonController {
         logger.info("Start process to update the person with firstname {} and lastname {}", person.getFirstName(), person.getLastName());
         this.personService.updatePerson(person);
         logger.info("Process end successfully");
-        return new ResponseEntity<>(person, HttpStatus.CREATED);
+        return new ResponseEntity<>(person, HttpStatus.OK);
     }
 
     @DeleteMapping("/person")
