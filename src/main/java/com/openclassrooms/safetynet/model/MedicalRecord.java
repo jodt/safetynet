@@ -13,6 +13,7 @@ public class MedicalRecord {
 
     private String firstName;
     private String lastName;
+    @JsonFormat(pattern="yyyy-MM-dd")
     private Date birthdate;
     private List<String> medications;
     private List<String> allergies;
