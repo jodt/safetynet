@@ -52,5 +52,4 @@ public class MedicalRecordService {
         logger.debug("Medical record found for {} {}", firstName, lastName);
         return medicalRecordFound;
     }
-qq
 }
