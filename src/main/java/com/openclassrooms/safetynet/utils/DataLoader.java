@@ -1,7 +1,6 @@
 package com.openclassrooms.safetynet.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import com.openclassrooms.safetynet.repository.FireStationRepository;
 import com.openclassrooms.safetynet.repository.MedicalRecordRepository;
 import com.openclassrooms.safetynet.repository.PersonRepository;
@@ -11,6 +10,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.lang.reflect.Type;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @Component
@@ -43,7 +47,14 @@ public class DataLoader implements CommandLineRunner {
             br.close();
         }
 
-        Gson gson = new GsonBuilder().setDateFormat("mm/dd/yyyy").create();
+        //Gson gson = new GsonBuilder().setDateFormat("mm/dd/yyyy").create();
+        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new JsonDeserializer<LocalDate>() {
+            @Override
+            public LocalDate deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+                return LocalDate.parse(json.getAsJsonPrimitive().getAsString(),dateTimeFormatter);
+            }
+        }).create();
         datas = gson.fromJson(jsonString, Datas.class);
         personRepository.setPersons(datas.getPersons());
         fireStationRepository.setFireStations(datas.getFirestations());
