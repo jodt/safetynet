@@ -30,8 +30,8 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException,HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = {fireStationNotFoundException.class})
-    public ResponseEntity<Object> handleFireStationNotFoundException(fireStationNotFoundException e){
+    @ExceptionHandler(value = {FireStationNotFoundException.class})
+    public ResponseEntity<Object> handleFireStationNotFoundException(FireStationNotFoundException e){
         ApiException apiException = new ApiException(
                 e.getMessage(),
                 HttpStatus.NOT_FOUND,

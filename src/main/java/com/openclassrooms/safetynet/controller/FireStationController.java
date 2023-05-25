@@ -1,6 +1,6 @@
 package com.openclassrooms.safetynet.controller;
 
-import com.openclassrooms.safetynet.exception.fireStationNotFoundException;
+import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.model.FireStation;
 import com.openclassrooms.safetynet.repository.FireStationRepository;
 import com.openclassrooms.safetynet.service.FireStationService;
@@ -42,7 +42,7 @@ public class FireStationController {
     }
 
     @PutMapping
-    public ResponseEntity<FireStation> updateFireStation(@RequestBody FireStation fireStation) throws fireStationNotFoundException {
+    public ResponseEntity<FireStation> updateFireStation(@RequestBody FireStation fireStation) throws FireStationNotFoundException {
         logger.info("Start process to update the fire station for the address {} ", fireStation.getAddress());
         this.fireStationService.updateStationNumber(fireStation);
         logger.info("Process end successfully");
@@ -50,7 +50,7 @@ public class FireStationController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Object> deleteFireStationByAddress(@RequestParam String address) throws fireStationNotFoundException {
+    public ResponseEntity<Object> deleteFireStationByAddress(@RequestParam String address) throws FireStationNotFoundException {
         logger.info("Start process to delete the fire station for the address {} ", address);
         this.fireStationService.deleteFireStationByAddress(address);
         logger.info("Process end successfully");
@@ -58,7 +58,7 @@ public class FireStationController {
     }
 
     @DeleteMapping("{stationNumber}")
-    public ResponseEntity<Object> deleteFireStationByStationNumber(@PathVariable int stationNumber) throws fireStationNotFoundException {
+    public ResponseEntity<Object> deleteFireStationByStationNumber(@PathVariable int stationNumber) throws FireStationNotFoundException {
         logger.info("Start process to delete the fire station with the number {} ", stationNumber);
         this.fireStationService.deleteFireStationByStationNumber(stationNumber);
         logger.info("Process end successfully");
