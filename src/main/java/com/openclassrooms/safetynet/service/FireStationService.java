@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class FireStationService {
 
@@ -33,10 +35,10 @@ public class FireStationService {
     }
 
     public void deleteFireStationByStationNumber(int stationNumber) throws FireStationNotFoundException {
-        logger.debug("Try to delete the fire station with the station's number {}", stationNumber);
-        FireStation fireStationToDelete = this.getFireStationByStationNumber(stationNumber);
-        logger.debug("Fire station successfully deleted");
-        this.fireStationRepository.deleteStation(fireStationToDelete);
+        logger.debug("Try to delete the fire stations with the station's number {}", stationNumber);
+        List <FireStation> fireStationToDelete = this.getFireStationByStationNumber(stationNumber);
+        logger.debug("Fire stations successfully deleted");
+        this.fireStationRepository.deleteStations(fireStationToDelete);
     }
 
     public void deleteFireStationByAddress(String address) throws FireStationNotFoundException {
@@ -46,7 +48,7 @@ public class FireStationService {
         this.fireStationRepository.deleteStation(fireStationToDelete);
     }
 
-    private FireStation getFireStationByAddress(String stationAddress) throws FireStationNotFoundException {
+    public FireStation getFireStationByAddress(String stationAddress) throws FireStationNotFoundException {
         logger.debug("Try to find fire station for the address {}", stationAddress);
         FireStation fireStationResult = this.fireStationRepository.getFireStationByAddress(stationAddress);
         if(fireStationResult == null){
@@ -57,14 +59,14 @@ public class FireStationService {
         return fireStationResult;
     }
 
-    private FireStation getFireStationByStationNumber(int stationNumber) throws FireStationNotFoundException {
-        logger.debug("Try to find fire station with the station's number {}", stationNumber);
-        FireStation fireStationResult = this.fireStationRepository.getFireStationByNumber(stationNumber);
-        if(fireStationResult == null){
-            logger.error("Fire station not found with the station's number {}", stationNumber);
+    public List<FireStation> getFireStationByStationNumber(int stationNumber) throws FireStationNotFoundException {
+        logger.debug("Try to find fire stations with the station's number {}", stationNumber);
+        List <FireStation> fireStationResult = this.fireStationRepository.getFireStationsByNumber(stationNumber);
+        if(fireStationResult.isEmpty()){
+            logger.error("Fire stations not found with the station's number {}", stationNumber);
             throw new FireStationNotFoundException("firestation not found with the station's number " + stationNumber);
         }
-        logger.debug("Fire station found with the station's number {}", stationNumber);
+        logger.debug("Fire stations found with the station's number {}", stationNumber);
         return fireStationResult;
     }
 }

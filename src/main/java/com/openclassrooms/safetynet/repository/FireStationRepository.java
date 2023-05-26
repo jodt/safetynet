@@ -24,14 +24,14 @@ public class FireStationRepository {
         return fireStation;
     }
 
-    public FireStation getFireStationByNumber(int stationNumber) {
-        FireStation fireStationResult = null;
+    public List<FireStation> getFireStationsByNumber(int stationNumber) {
+        List<FireStation> fireStationsResult = new ArrayList<>();
         for (FireStation fireStation : this.firestations){
             if (fireStation.getStation() == stationNumber){
-                fireStationResult = fireStation;
+                fireStationsResult.add(fireStation);
             }
         }
-        return fireStationResult;
+        return fireStationsResult;
     }
 
     public FireStation getFireStationByAddress(String stationAddress) {
@@ -46,6 +46,12 @@ public class FireStationRepository {
 
     public void deleteStation (FireStation fireStation){
         this.firestations.remove(fireStation);
+    }
+
+    public void deleteStations (List<FireStation> fireStations){
+        for (FireStation firestation : fireStations){
+            this.firestations.remove(firestation);
+        }
     }
 
     public void updateStationNumber (FireStation fireStation){
