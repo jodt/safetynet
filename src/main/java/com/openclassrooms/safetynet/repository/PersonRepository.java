@@ -29,6 +29,16 @@ public class PersonRepository {
         return personResult;
     }
 
+    public List<Person> findPersonsByAddress(String address){
+        List<Person> personList = new ArrayList<>();
+        for (Person person : this.persons){
+            if (person.getAddress().equals(address)){
+                personList.add(person);
+            }
+        }
+        return personList;
+    }
+
     public Person addPerson(Person person){
         this.persons.add(person);
         return person;
