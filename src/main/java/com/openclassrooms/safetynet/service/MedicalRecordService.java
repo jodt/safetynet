@@ -7,14 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class MedicalRecordService {
 
     private final Logger logger = LoggerFactory.getLogger(MedicalRecordService.class);
 
     private final MedicalRecordRepository medicalRecordRepository;
+
 
     public MedicalRecordService(MedicalRecordRepository medicalRecordRepository) {
         this.medicalRecordRepository = medicalRecordRepository;
@@ -42,7 +41,7 @@ public class MedicalRecordService {
         this.medicalRecordRepository.deleteMedicalRecord(medicalRecordFound);
     }
 
-    private MedicalRecord findMedicalRecordByFirstNameAndLastName(String firstName, String lastName) throws MedicalRecordNotFoundException {
+    public MedicalRecord findMedicalRecordByFirstNameAndLastName(String firstName, String lastName) throws MedicalRecordNotFoundException {
         logger.debug("Try to find the medical record of {} {}", firstName, lastName);
         MedicalRecord medicalRecordFound = this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(firstName,lastName);
         if (medicalRecordFound == null){
@@ -52,4 +51,6 @@ public class MedicalRecordService {
         logger.debug("Medical record found for {} {}", firstName, lastName);
         return medicalRecordFound;
     }
+
+
 }
