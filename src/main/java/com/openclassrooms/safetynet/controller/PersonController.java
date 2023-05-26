@@ -5,13 +5,13 @@ import com.openclassrooms.safetynet.exception.PersonNotFoundException;
 import com.openclassrooms.safetynet.model.Person;
 import com.openclassrooms.safetynet.repository.PersonRepository;
 import com.openclassrooms.safetynet.service.PersonService;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import org.slf4j.Logger;
 
 
 @RestController
@@ -19,6 +19,7 @@ public class PersonController {
     private final Logger logger = LoggerFactory.getLogger(PersonController.class);
     private final PersonRepository personRepository;
     private final PersonService personService;
+
 
     public PersonController(PersonRepository personRepository, PersonService personService) {
         this.personRepository = personRepository;
