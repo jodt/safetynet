@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class PersonWithAgeDTO {
+public class PersonWithAgeAndFamilyMembersDTO {
 
     private String firstName;
     private String lastName;
