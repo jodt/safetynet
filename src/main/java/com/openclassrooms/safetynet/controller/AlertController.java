@@ -1,6 +1,6 @@
 package com.openclassrooms.safetynet.controller;
 
-import com.openclassrooms.safetynet.dto.PersonWithAgeDTO;
+import com.openclassrooms.safetynet.dto.PersonWithAgeAndFamilyMembersDTO;
 import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.exception.MedicalRecordNotFoundException;
 import com.openclassrooms.safetynet.exception.PersonNotFoundException;
@@ -25,9 +25,9 @@ public class AlertController {
 
 
     @GetMapping("/childAlert")
-    public List<PersonWithAgeDTO> getchildrenList(@RequestParam String address) throws MedicalRecordNotFoundException, PersonNotFoundException {
+    public List<PersonWithAgeAndFamilyMembersDTO> getchildrenList(@RequestParam String address) throws MedicalRecordNotFoundException, PersonNotFoundException {
         logger.info("Start process to collect children at {}", address);
-        List<PersonWithAgeDTO> childrenListResult = this.personService.findChildrenByAddress(address);
+        List<PersonWithAgeAndFamilyMembersDTO> childrenListResult = this.personService.findChildrenByAddress(address);
         logger.info("Process end successfully");
         return childrenListResult;
     }
