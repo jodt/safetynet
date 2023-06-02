@@ -1,5 +1,6 @@
 package com.openclassrooms.safetynet.controller;
 
+import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.exception.MailsNotFoundException;
 import com.openclassrooms.safetynet.exception.PersonNotFoundException;
 import com.openclassrooms.safetynet.model.Person;
@@ -61,4 +62,14 @@ public class PersonController {
         logger.info("Start process to collect all people's emails for the city {}", city);
         return this.personService.getMailsByCity(city);
     }
+
+    @GetMapping("/firestation")
+    public Object getPeopleConcernedByFiresStation(@RequestParam int stationNumber) throws FireStationNotFoundException {
+        logger.info("Start process to delete the fire station with the number {} ", stationNumber);
+        Object personsListWithMajorAndMinorDetails = this.personService.findPeopleConcernedByFireStation(stationNumber);
+        logger.info("Process end successfully");
+        return personsListWithMajorAndMinorDetails;
+    }
+
+
 }
