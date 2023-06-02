@@ -1,6 +1,6 @@
 package com.openclassrooms.safetynet.service;
 
-import com.openclassrooms.safetynet.dto.PersonWithAgeDTO;
+import com.openclassrooms.safetynet.dto.*;
 import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.exception.MailsNotFoundException;
 import com.openclassrooms.safetynet.exception.MedicalRecordNotFoundException;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 
@@ -35,23 +36,6 @@ public class PersonService {
         this.personMapper = personMapper;
     }
 
-
-    public List<String> getMailsByCity(String city) throws MailsNotFoundException {
-        logger.debug("try to collect all people's mail of the city: {}", city);
-        List<String> mails = new ArrayList<>();
-        List<Person> persons = this.personRepository.getPersons();
-        for(Person person : persons) {
-            if (person.getCity().equals(city)){
-                mails.add(person.getEmail());
-            }
-        }
-        if(mails.isEmpty()){
-            logger.error("No email found for people living in {}", city);
-            throw new MailsNotFoundException("Aucun mail trouvé pour la ville " + city);
-        }
-        logger.debug("emails successfully collected");
-        return mails;
-    }
 
     public Person addPerson(Person person){
         logger.debug("Try to add the person {} {}", person.getFirstName(), person.getLastName());
@@ -74,11 +58,36 @@ public class PersonService {
         this.personRepository.deletePerson(personFound);
     }
 
+    public PersonsConcernedByFireStation findPeopleConcernedByFireStation(int number) throws FireStationNotFoundException {
+        AtomicInteger adults = new AtomicInteger(0);
+        AtomicInteger children = new AtomicInteger(0);
 
-    public List<PersonWithAgeDTO> findChildrenByAddress(String address) throws MedicalRecordNotFoundException, PersonNotFoundException {
+
+        List <String> addresses = this.fireStationService.getFireStationByStationNumber(number).stream()
+                .map(fireStation -> fireStation.getAddress())//retrieve addresses of fire Stations
+                .collect(Collectors.toList());
+
+        List<PersonWithAddressAndPhoneDTO> personWithAddressAndPhoneDTOList= this.personRepository.getPersons().stream()
+                .filter(person -> addresses.stream()
+                        .anyMatch(address -> person.getAddress().equals(address)))
+                .map(person -> createPersonWithAddressAndPhoneDTO(person))
+                .collect(Collectors.toList());
+
+        personWithAddressAndPhoneDTOList.forEach(personWithAddressAndPhoneDTO -> {
+            if (personWithAddressAndPhoneDTO.getAge() > 18) {
+                adults.getAndIncrement();
+            } else {
+                children.getAndIncrement();
+            }
+        });
+
+        return new PersonsConcernedByFireStation(personWithAddressAndPhoneDTOList,children,adults);
+    }
+
+    public List<PersonWithAgeAndFamilyMembersDTO> findChildrenByAddress(String address) throws MedicalRecordNotFoundException, PersonNotFoundException {
 
         List<MedicalRecord> medicalRecordList = new ArrayList<>();
-        List<PersonWithAgeDTO> childrenList = new ArrayList<>();
+        List<PersonWithAgeAndFamilyMembersDTO> childrenList = new ArrayList<>();
 
         List<Person> personList = this.findPersonByAddress(address);
 
@@ -115,13 +124,11 @@ public class PersonService {
 
     public List<String> findPhoneNumberByFireStationNumber(int number) throws FireStationNotFoundException {
 
-        List <String> adresses = this.fireStationService.getFireStationByStationNumber(number).stream()
-                .map(fireStation -> fireStation.getAddress())//retrieve addresses of fire Stations
-                .collect(Collectors.toList());
+        List<String> addresses = getAddressesByStationNumber(number);
 
         logger.debug("Try to retrieve the telephone numbers of the people concerned by the fire station number {}", number);
         List<String> phoneNumber = this.personRepository.getPersons().stream()
-                .filter(person -> adresses.stream()
+                .filter(person -> addresses.stream()
                         .anyMatch(address -> person.getAddress().equals(address))) //filter people based on retrieved addresses
                 .map(person -> person.getPhone())//Get people's phone number
                 .distinct()
@@ -130,6 +137,69 @@ public class PersonService {
         logger.debug("Phone numbers retrieved successfully");
         return phoneNumber;
     }
+
+
+
+    public FireDTO findAllPeopleInFireCase(String address) throws PersonNotFoundException, FireStationNotFoundException {
+        logger.debug("Try to find People living at {} in fire case", address);
+        List<PersonWithMedicalRecordDTO> personsList = this.findPersonByAddress(address).stream()
+                .map(person -> createPersonWithMedicalRecordDTO(person))
+                .collect(Collectors.toList());
+
+        int firesStationNumber = (this.fireStationService.getFireStationByAddress(address)).getStation();
+
+        return new FireDTO(personsList,firesStationNumber);
+    }
+
+    public List<FloodDTO> findAllPeopleInFloodCase(List<Integer> fireStationsNumber) throws PersonNotFoundException {
+
+        List<FloodDTO> personsListInFloodCaseDTOList = new ArrayList<>();
+
+        List<String> addresses = fireStationsNumber.stream()
+                .map(station -> getFireStationAdresses(station))
+                .flatMap(addressList -> addressList.stream())
+                .collect(Collectors.toList());
+
+        if (!addresses.isEmpty()){
+
+            FloodDTO personsListInFloodCaseDTO;
+
+            for(String address: addresses){
+                List<PersonWithMedicalRecordDTO> personList = this.findPersonByAddress(address).stream()
+                        .map(person -> createPersonWithMedicalRecordDTO(person)).collect(Collectors.toList());
+                personsListInFloodCaseDTOList.add(new FloodDTO(address,personList));
+            }
+
+        }
+        return personsListInFloodCaseDTOList;
+    }
+
+    public List<PersonInfoDTO> getPersonInfo(String firstName, String lastName) {
+        return this.personRepository.getPersons().stream()
+                .filter(person -> (person.getFirstName().toLowerCase()).equals(firstName) && (person.getLastName().toLowerCase()).equals(lastName))
+                .map(person -> createPersonInfoDTO(person))
+                .collect(Collectors.toList());
+    }
+
+
+
+    public List<String> getMailsByCity(String city) throws MailsNotFoundException {
+        logger.debug("try to collect all people's mail of the city: {}", city);
+        List<String> mails = this.personRepository.getPersons()
+                .stream()
+                .filter(person -> person.getCity().equals(city))
+                .map(person -> person.getEmail())
+                .distinct()
+                .collect(Collectors.toList());
+
+        if(mails.isEmpty()){
+            logger.error("No email found for people living in {}", city);
+            throw new MailsNotFoundException("Aucun mail trouvé pour la ville " + city);
+        }
+        logger.debug("emails successfully collected");
+        return mails;
+    }
+
 
     private Person findPersonByFirstNameAndLastName(String firstName, String lastName) throws PersonNotFoundException {
         logger.debug("Try to find person with firstname {} and lastname {}", firstName, lastName);
@@ -144,7 +214,7 @@ public class PersonService {
 
 
     private List<Person> findPersonByAddress(String address) throws PersonNotFoundException {
-        logger.debug("try to find people at {}", address);
+        logger.debug("Try to find people at {}", address);
         List<Person> personsFound = this.personRepository.findPersonsByAddress(address);
         if (personsFound.isEmpty()){
             logger.error("nobody found at {}",address);
@@ -153,5 +223,55 @@ public class PersonService {
         logger.debug("People found at {}", address);
         return this.personRepository.findPersonsByAddress(address);
     }
+
+    private List<String> getAddressesByStationNumber(int number) throws FireStationNotFoundException {
+        List <String> addresses = this.fireStationService.getFireStationByStationNumber(number).stream()
+                .map(fireStation -> fireStation.getAddress())//retrieve addresses of fire Stations
+                .collect(Collectors.toList());
+        return addresses;
+    }
+
+    private PersonWithMedicalRecordDTO createPersonWithMedicalRecordDTO(Person person) {
+        MedicalRecord medicalRecord;
+        try {
+            medicalRecord = this.medicalRecordService.findMedicalRecordByFirstNameAndLastName(person.getFirstName(), person.getLastName());
+            return this.personMapper.asPersonWithMedicalRecordDTO(person, medicalRecord);
+        } catch (MedicalRecordNotFoundException e) {
+            logger.error("Not medical Record Found for {} {}", person.getFirstName(), person.getLastName());
+            return this.personMapper.asPersonWithMedicalRecordDTO(person,new MedicalRecord());
+        }
+    }
+
+    private PersonWithAddressAndPhoneDTO createPersonWithAddressAndPhoneDTO(Person person) {
+        MedicalRecord medicalRecord;
+        try {
+            medicalRecord = this.medicalRecordService.findMedicalRecordByFirstNameAndLastName(person.getFirstName(), person.getLastName());
+            return this.personMapper.asPersonWithAddressAndPhoneDTO(person, medicalRecord);
+        } catch (MedicalRecordNotFoundException e) {
+            logger.error("Not medical Record Found for {} {}", person.getFirstName(), person.getLastName());
+            return this.personMapper.asPersonWithAddressAndPhoneDTO(person, new MedicalRecord());
+        }
+    }
+
+    private PersonInfoDTO createPersonInfoDTO(Person person) {
+        MedicalRecord medicalRecord;
+        try {
+            medicalRecord = this.medicalRecordService.findMedicalRecordByFirstNameAndLastName(person.getFirstName(), person.getLastName());
+            return this.personMapper.asPersonInfoDTO(person, medicalRecord);
+        } catch (MedicalRecordNotFoundException e) {
+            logger.error("Not medical Record Found for {} {}", person.getFirstName(), person.getLastName());
+            return this.personMapper.asPersonInfoDTO(person, new MedicalRecord());
+        }
+    }
+
+    private List<String> getFireStationAdresses(Integer station) {
+        try {
+            return this.getAddressesByStationNumber(station);
+        } catch (FireStationNotFoundException e) {
+            logger.error("Station not found with the number {}", station);
+            return new ArrayList<String>();
+        }
+    }
+
 
 }
