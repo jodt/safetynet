@@ -2,7 +2,6 @@ package com.openclassrooms.safetynet.controller;
 
 import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.model.FireStation;
-import com.openclassrooms.safetynet.repository.FireStationRepository;
 import com.openclassrooms.safetynet.service.FireStationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,28 +9,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/firestation")
 public class FireStationController {
 
     private final Logger logger = LoggerFactory.getLogger(FireStationController.class);
-
     private final FireStationService fireStationService;
 
-    private final FireStationRepository fireStationRepository;
 
-    public FireStationController(FireStationService fireStationService, FireStationRepository fireStationRepository) {
+    public FireStationController(FireStationService fireStationService) {
+
         this.fireStationService = fireStationService;
-        this.fireStationRepository = fireStationRepository;
     }
 
-    @GetMapping
-    public List<FireStation> findAllFireStations(){
-        logger.info("Start process to collect all fire stations");
-        return this.fireStationRepository.getFireStations();
-    }
 
     @PostMapping
     public ResponseEntity<FireStation> addFireStation(@RequestBody FireStation fireStation){
@@ -64,4 +54,7 @@ public class FireStationController {
         logger.info("Process end successfully");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+
+
 }
