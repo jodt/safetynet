@@ -1,5 +1,6 @@
 package com.openclassrooms.safetynet.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
 import com.openclassrooms.safetynet.repository.FireStationRepository;
 import com.openclassrooms.safetynet.repository.MedicalRecordRepository;
@@ -47,15 +48,7 @@ public class DataLoader implements CommandLineRunner {
             br.close();
         }
 
-        //Gson gson = new GsonBuilder().setDateFormat("mm/dd/yyyy").create();
-        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new JsonDeserializer<LocalDate>() {
-            @Override
-            public LocalDate deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-                return LocalDate.parse(json.getAsJsonPrimitive().getAsString(),dateTimeFormatter);
-            }
-        }).create();
-        datas = gson.fromJson(jsonString, Datas.class);
+        datas = new ObjectMapper().readValue(jsonString,Datas.class);
         personRepository.setPersons(datas.getPersons());
         fireStationRepository.setFireStations(datas.getFirestations());
         medicalRecordRepository.setMedicalRecords(datas.getMedicalrecords());
