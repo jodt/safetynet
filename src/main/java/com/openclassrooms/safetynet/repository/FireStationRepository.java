@@ -54,8 +54,9 @@ public class FireStationRepository {
         }
     }
 
-    public void updateStationNumber (FireStation fireStation){
+    public FireStation updateStationNumber (FireStation fireStation){
         FireStation updateFireStation = this.getFireStationByAddress(fireStation.getAddress());
         updateFireStation.setStation(fireStation.getStation());
+        return updateFireStation;
     }
 }

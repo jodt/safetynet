@@ -48,13 +48,14 @@ public class PersonRepository {
         this.persons.remove(person);
     }
 
-    public void updatePerson(Person person) {
-        Person updatePerson = this.findPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName());
-        updatePerson.setAddress(person.getAddress());
-        updatePerson.setCity(person.getCity());
-        updatePerson.setPhone(person.getPhone());
-        updatePerson.setZip(person.getZip());
-        updatePerson.setEmail(person.getEmail());
+    public Person updatePerson(Person person) {
+        Person personToUpdate = this.findPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName());
+        personToUpdate.setAddress(person.getAddress());
+        personToUpdate.setCity(person.getCity());
+        personToUpdate.setPhone(person.getPhone());
+        personToUpdate.setZip(person.getZip());
+        personToUpdate.setEmail(person.getEmail());
+        return personToUpdate;
         }
 
 }

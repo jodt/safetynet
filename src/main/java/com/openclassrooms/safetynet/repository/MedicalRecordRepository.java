@@ -28,11 +28,12 @@ public class MedicalRecordRepository {
         this.medicalRecords.remove(medicalRecord);
     }
 
-    public void updateMedicalRecord(MedicalRecord medicalRecord){
+    public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord){
         MedicalRecord updateMedicalRecord = this.findMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(),medicalRecord.getLastName());
         updateMedicalRecord.setBirthdate(medicalRecord.getBirthdate());
         updateMedicalRecord.setAllergies(medicalRecord.getAllergies());
         updateMedicalRecord.setMedications(medicalRecord.getMedications());
+        return updateMedicalRecord;
     }
 
     public MedicalRecord findMedicalRecordByFirstNameAndLastName(String firstName, String lastName) {
