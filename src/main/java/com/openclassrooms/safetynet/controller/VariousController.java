@@ -1,21 +1,20 @@
 package com.openclassrooms.safetynet.controller;
 
+import com.openclassrooms.safetynet.dto.FireDTO;
 import com.openclassrooms.safetynet.dto.PersonInfoDTO;
 import com.openclassrooms.safetynet.dto.PersonWithMedicalRecordDTO;
-import com.openclassrooms.safetynet.dto.FireDTO;
-import com.openclassrooms.safetynet.dto.FloodDTO;
 import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.exception.PersonNotFoundException;
 import com.openclassrooms.safetynet.service.PersonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 public class VariousController {
@@ -37,10 +36,10 @@ public class VariousController {
     }
 
     @GetMapping("/flood/stations")
-    public List<FloodDTO> getAllPeopleConcernedByFireStations(@RequestParam List<Integer> stations) throws PersonNotFoundException, FireStationNotFoundException {
+    public Map<String,List<PersonWithMedicalRecordDTO>> getAllPeopleConcernedByFireStations(@RequestParam List<Integer> stations) throws PersonNotFoundException, FireStationNotFoundException {
         stations.forEach(station -> logger.info("Start process to find people concerned by the fire station number {} in the event of flooding", station));
-        List<FloodDTO> peopleList = this.personService.findAllPeopleInFloodCase(stations);
-        if (peopleList.isEmpty()){
+        Map <String,List<PersonWithMedicalRecordDTO>> peopleList = this.personService.findAllPeopleInFloodCase(stations);
+        if (Objects.isNull(peopleList)){
             logger.error("No fire stations found");
             throw new FireStationNotFoundException("No fire stations found for these numbers");
         }
