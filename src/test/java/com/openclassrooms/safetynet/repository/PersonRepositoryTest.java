@@ -58,23 +58,10 @@ class PersonRepositoryTest {
         List<Person> result = this.personRepository.getPersons();
 
         assertNotNull(result);
-
         assertEquals(2, result.size());
-        assertEquals("firstname1", result.get(0).getFirstName());
-        assertEquals("lastname1", result.get(0).getLastName());
-        assertEquals("person address 1", result.get(0).getAddress());
-        assertEquals("city", result.get(0).getCity());
-        assertEquals(59000, result.get(0).getZip());
-        assertEquals("001-001-001", result.get(0).getPhone());
-        assertEquals("person1@mail.com", result.get(0).getEmail());
 
-        assertEquals("firstname2", result.get(1).getFirstName());
-        assertEquals("lastname2", result.get(1).getLastName());
-        assertEquals("person address 2", result.get(1).getAddress());
-        assertEquals("city", result.get(1).getCity());
-        assertEquals(59100, result.get(1).getZip());
-        assertEquals("001-001-002", result.get(1).getPhone());
-        assertEquals("person2@mail.com", result.get(1).getEmail());
+        assertEquals(person1, result.get(0));
+        assertEquals(person2, result.get(1));
 
     }
 
@@ -87,13 +74,7 @@ class PersonRepositoryTest {
 
         assertNotNull(result);
 
-        assertEquals("firstname1", result.getFirstName());
-        assertEquals("lastname1", result.getLastName());
-        assertEquals("person address 1", result.getAddress());
-        assertEquals("city", result.getCity());
-        assertEquals(59000, result.getZip());
-        assertEquals("001-001-001", result.getPhone());
-        assertEquals("person1@mail.com", result.getEmail());
+        assertEquals(person1, result);
 
     }
 
@@ -105,16 +86,9 @@ class PersonRepositoryTest {
         List<Person> result = this.personRepository.findPersonsByAddress("person address 1");
 
         assertNotNull(result);
-
         assertEquals(1, result.size());
-        assertEquals("firstname1", result.get(0).getFirstName());
-        assertEquals("lastname1", result.get(0).getLastName());
-        assertEquals("person address 1", result.get(0).getAddress());
-        assertEquals("city", result.get(0).getCity());
-        assertEquals(59000, result.get(0).getZip());
-        assertEquals("001-001-001", result.get(0).getPhone());
-        assertEquals("person1@mail.com", result.get(0).getEmail());
 
+        assertEquals(person1,result.get(0));
     }
 
 
@@ -137,21 +111,8 @@ class PersonRepositoryTest {
         assertNotNull(result);
         assertEquals(3, this.personList.size());
 
-        assertEquals("firstname3", result.getFirstName());
-        assertEquals("lastname3", result.getLastName());
-        assertEquals("person address 3", result.getAddress());
-        assertEquals("city", result.getCity());
-        assertEquals(59300, result.getZip());
-        assertEquals("001-001-003", result.getPhone());
-        assertEquals("person3@mail.com", result.getEmail());
-
-        assertEquals("firstname3", this.personList.get(2).getFirstName());
-        assertEquals("lastname3", this.personList.get(2).getLastName());
-        assertEquals("person address 3", this.personList.get(2).getAddress());
-        assertEquals("city", this.personList.get(2).getCity());
-        assertEquals(59300, this.personList.get(2).getZip());
-        assertEquals("001-001-003", this.personList.get(2).getPhone());
-        assertEquals("person3@mail.com", this.personList.get(2).getEmail());
+        assertEquals(personToAdd,result);
+        assertEquals(personToAdd,this.personList.get(2));
 
     }
 
