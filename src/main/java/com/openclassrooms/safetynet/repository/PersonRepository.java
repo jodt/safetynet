@@ -11,51 +11,47 @@ public class PersonRepository {
 
     private List<Person> persons = new ArrayList<>();
 
-    public List<Person> getPersons(){
+    public List<Person> getPersons() {
         return this.persons;
     }
 
-    public void setPersons(List<Person> persons){
+    public void setPersons(List<Person> persons) {
         this.persons = persons;
     }
 
-    public Person findPersonByFirstNameAndLastName(String firstName,String lastName){
+    public Person findPersonByFirstNameAndLastName(String firstName, String lastName) {
         Person personResult = null;
-        for(Person person : this.persons){
-            if (person.getFirstName().toLowerCase().equals(firstName.toLowerCase()) && person.getLastName().toLowerCase().equals(lastName.toLowerCase())){
+        for (Person person : this.persons) {
+            if (person.getFirstName().toLowerCase().equals(firstName.toLowerCase()) && person.getLastName().toLowerCase().equals(lastName.toLowerCase())) {
                 personResult = person;
             }
         }
         return personResult;
     }
 
-    public List<Person> findPersonsByAddress(String address){
+    public List<Person> findPersonsByAddress(String address) {
         List<Person> personList = new ArrayList<>();
-        for (Person person : this.persons){
-            if (person.getAddress().equals(address)){
+        for (Person person : this.persons) {
+            if (person.getAddress().equals(address)) {
                 personList.add(person);
             }
         }
         return personList;
     }
 
-    public Person addPerson(Person person){
+    public Person addPerson(Person person) {
         this.persons.add(person);
         return person;
     }
 
-    public void deletePerson(Person person){
+    public void deletePerson(Person person) {
         this.persons.remove(person);
     }
 
-    public Person updatePerson(Person person) {
-        Person personToUpdate = this.findPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName());
-        personToUpdate.setAddress(person.getAddress());
-        personToUpdate.setCity(person.getCity());
-        personToUpdate.setPhone(person.getPhone());
-        personToUpdate.setZip(person.getZip());
-        personToUpdate.setEmail(person.getEmail());
-        return personToUpdate;
-        }
+    public Person updatePerson(Person updatedPerson) {
+        int index = this.persons.indexOf(this.findPersonByFirstNameAndLastName(updatedPerson.getFirstName(), updatedPerson.getLastName()));
+        this.persons.set(index, updatedPerson);
+        return updatedPerson;
+    }
 
 }

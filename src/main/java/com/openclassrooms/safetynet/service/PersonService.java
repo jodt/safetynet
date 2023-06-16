@@ -14,10 +14,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-
 
 
 @Service
@@ -37,7 +38,7 @@ public class PersonService {
     }
 
 
-    public Person addPerson(Person person){
+    public Person addPerson(Person person) {
         logger.debug("Try to add the person {} {}", person.getFirstName(), person.getLastName());
         this.personRepository.addPerson(person);
         logger.debug("Person successfully added");
@@ -46,14 +47,20 @@ public class PersonService {
 
     public Person updatePerson(Person person) throws PersonNotFoundException {
         logger.debug("Try to update the person {} {}", person.getFirstName(), person.getLastName());
-        this.findPersonByFirstNameAndLastName(person.getFirstName(),person.getLastName());
-        this.personRepository.updatePerson(person);
+        Person personToUpdate = this.findPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName());
+        personToUpdate.setAddress(person.getAddress());
+        personToUpdate.setCity(person.getCity());
+        personToUpdate.setPhone(person.getPhone());
+        personToUpdate.setZip(person.getZip());
+        personToUpdate.setEmail(person.getEmail());
+        this.personRepository.updatePerson(personToUpdate);
         logger.debug("Person successfully updated");
         return person;
     }
+
     public void deletePerson(String firstName, String lastName) throws Exception {
-        logger.debug("Try to delete the person {} {}", firstName,lastName);
-        Person personFound = this.findPersonByFirstNameAndLastName(firstName,lastName);
+        logger.debug("Try to delete the person {} {}", firstName, lastName);
+        Person personFound = this.findPersonByFirstNameAndLastName(firstName, lastName);
         logger.debug("Person successfully deleted");
         this.personRepository.deletePerson(personFound);
     }
@@ -63,11 +70,11 @@ public class PersonService {
         AtomicInteger children = new AtomicInteger(0);
 
 
-        List <String> addresses = this.fireStationService.getFireStationByStationNumber(number).stream()
+        List<String> addresses = this.fireStationService.getFireStationByStationNumber(number).stream()
                 .map(fireStation -> fireStation.getAddress())//retrieve addresses of fire Stations
                 .collect(Collectors.toList());
 
-        List<PersonWithAddressAndPhoneDTO> personWithAddressAndPhoneDTOList= this.personRepository.getPersons().stream()
+        List<PersonWithAddressAndPhoneDTO> personWithAddressAndPhoneDTOList = this.personRepository.getPersons().stream()
                 .filter(person -> addresses.stream()
                         .anyMatch(address -> person.getAddress().equals(address)))
                 .map(person -> createPersonWithAddressAndPhoneDTO(person))
@@ -81,7 +88,7 @@ public class PersonService {
             }
         });
 
-        return new PersonsConcernedByFireStation(personWithAddressAndPhoneDTOList,children,adults);
+        return new PersonsConcernedByFireStation(personWithAddressAndPhoneDTOList, children, adults);
     }
 
     public List<PersonWithAgeAndFamilyMembersDTO> findChildrenByAddress(String address) throws MedicalRecordNotFoundException, PersonNotFoundException {
@@ -104,7 +111,7 @@ public class PersonService {
                     .filter(personWithAgeDTO -> personWithAgeDTO.getAge() <= 18) // filter people to retrieve only children
                     .collect(Collectors.toList());
 
-            if (!childrenList.isEmpty()){
+            if (!childrenList.isEmpty()) {
                 logger.debug("Children found, try to add other family members");
                 childrenList.forEach(
                         child -> child.setOtherFamilyMembers(
@@ -117,7 +124,6 @@ public class PersonService {
                 logger.debug("No children found at {}", address);
             }
         }
-
         return childrenList;
     }
 
@@ -139,7 +145,6 @@ public class PersonService {
     }
 
 
-
     public FireDTO findAllPeopleInFireCase(String address) throws PersonNotFoundException, FireStationNotFoundException {
         logger.debug("Try to find People living at {} in fire case", address);
         List<PersonWithMedicalRecordDTO> personsList = this.findPersonByAddress(address).stream()
@@ -148,30 +153,31 @@ public class PersonService {
 
         int firesStationNumber = (this.fireStationService.getFireStationByAddress(address)).getStation();
 
-        return new FireDTO(personsList,firesStationNumber);
+        return new FireDTO(personsList, firesStationNumber);
     }
 
-    public List<FloodDTO> findAllPeopleInFloodCase(List<Integer> fireStationsNumber) throws PersonNotFoundException {
+    public Map<String, List<PersonWithMedicalRecordDTO>> findAllPeopleInFloodCase(List<Integer> fireStationsNumber) throws PersonNotFoundException {
 
-        List<FloodDTO> personsListInFloodCaseDTOList = new ArrayList<>();
-
+        Map<String, List<PersonWithMedicalRecordDTO>> personsListInFloodCaseDTO = new HashMap<>();
         List<String> addresses = fireStationsNumber.stream()
-                .map(station -> getFireStationAdresses(station))
+                .map(station -> getFireStationAddresses(station))
                 .flatMap(addressList -> addressList.stream())
                 .collect(Collectors.toList());
 
-        if (!addresses.isEmpty()){
+        if (!addresses.isEmpty()) {
 
-            FloodDTO personsListInFloodCaseDTO;
-
-            for(String address: addresses){
+            for (String address : addresses) {
                 List<PersonWithMedicalRecordDTO> personList = this.findPersonByAddress(address).stream()
-                        .map(person -> createPersonWithMedicalRecordDTO(person)).collect(Collectors.toList());
-                personsListInFloodCaseDTOList.add(new FloodDTO(address,personList));
+                        .map(person -> createPersonWithMedicalRecordDTO(person))
+                        .collect(Collectors.toList());
+                personsListInFloodCaseDTO.put(address, personList);
             }
 
         }
-        return personsListInFloodCaseDTOList;
+        if (personsListInFloodCaseDTO.isEmpty()) {
+            throw new PersonNotFoundException("Person not found");
+        }
+        return personsListInFloodCaseDTO;
     }
 
     public List<PersonInfoDTO> getPersonInfo(String firstName, String lastName) {
@@ -180,7 +186,6 @@ public class PersonService {
                 .map(person -> createPersonInfoDTO(person))
                 .collect(Collectors.toList());
     }
-
 
 
     public List<String> getMailsByCity(String city) throws MailsNotFoundException {
@@ -192,9 +197,9 @@ public class PersonService {
                 .distinct()
                 .collect(Collectors.toList());
 
-        if(mails.isEmpty()){
+        if (mails.isEmpty()) {
             logger.error("No email found for people living in {}", city);
-            throw new MailsNotFoundException("Aucun mail trouvé pour la ville " + city);
+            throw new MailsNotFoundException("No email found for people living in " + city);
         }
         logger.debug("emails successfully collected");
         return mails;
@@ -203,10 +208,10 @@ public class PersonService {
 
     private Person findPersonByFirstNameAndLastName(String firstName, String lastName) throws PersonNotFoundException {
         logger.debug("Try to find person with firstname {} and lastname {}", firstName, lastName);
-        Person personFound = this.personRepository.findPersonByFirstNameAndLastName(firstName,lastName);
-        if(personFound == null){
+        Person personFound = this.personRepository.findPersonByFirstNameAndLastName(firstName, lastName);
+        if (personFound == null) {
             logger.error("Person not found with firstname {} and lastname {}", firstName, lastName);
-            throw new PersonNotFoundException("Person not found with firstname " + firstName + " and lastname "+ lastName) ;
+            throw new PersonNotFoundException("Person not found with firstname " + firstName + " and lastname " + lastName);
         }
         logger.debug("Person found with firstname {} and lastname {}", firstName, lastName);
         return personFound;
@@ -216,16 +221,16 @@ public class PersonService {
     private List<Person> findPersonByAddress(String address) throws PersonNotFoundException {
         logger.debug("Try to find people at {}", address);
         List<Person> personsFound = this.personRepository.findPersonsByAddress(address);
-        if (personsFound.isEmpty()){
-            logger.error("nobody found at {}",address);
+        if (personsFound.isEmpty()) {
+            logger.error("nobody found at {}", address);
             throw new PersonNotFoundException("nobody found at " + address);
         }
         logger.debug("People found at {}", address);
-        return this.personRepository.findPersonsByAddress(address);
+        return personsFound;
     }
 
     private List<String> getAddressesByStationNumber(int number) throws FireStationNotFoundException {
-        List <String> addresses = this.fireStationService.getFireStationByStationNumber(number).stream()
+        List<String> addresses = this.fireStationService.getFireStationByStationNumber(number).stream()
                 .map(fireStation -> fireStation.getAddress())//retrieve addresses of fire Stations
                 .collect(Collectors.toList());
         return addresses;
@@ -238,7 +243,7 @@ public class PersonService {
             return this.personMapper.asPersonWithMedicalRecordDTO(person, medicalRecord);
         } catch (MedicalRecordNotFoundException e) {
             logger.error("Not medical Record Found for {} {}", person.getFirstName(), person.getLastName());
-            return this.personMapper.asPersonWithMedicalRecordDTO(person,new MedicalRecord());
+            return null;
         }
     }
 
@@ -249,7 +254,7 @@ public class PersonService {
             return this.personMapper.asPersonWithAddressAndPhoneDTO(person, medicalRecord);
         } catch (MedicalRecordNotFoundException e) {
             logger.error("Not medical Record Found for {} {}", person.getFirstName(), person.getLastName());
-            return this.personMapper.asPersonWithAddressAndPhoneDTO(person, new MedicalRecord());
+            return null;
         }
     }
 
@@ -260,11 +265,11 @@ public class PersonService {
             return this.personMapper.asPersonInfoDTO(person, medicalRecord);
         } catch (MedicalRecordNotFoundException e) {
             logger.error("Not medical Record Found for {} {}", person.getFirstName(), person.getLastName());
-            return this.personMapper.asPersonInfoDTO(person, new MedicalRecord());
+            return null;
         }
     }
 
-    private List<String> getFireStationAdresses(Integer station) {
+    private List<String> getFireStationAddresses(Integer station) {
         try {
             return this.getAddressesByStationNumber(station);
         } catch (FireStationNotFoundException e) {

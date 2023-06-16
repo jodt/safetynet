@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class MedicalRecordService {
 
@@ -19,18 +21,23 @@ public class MedicalRecordService {
         this.medicalRecordRepository = medicalRecordRepository;
     }
 
-    public MedicalRecord addMedicalRecord(MedicalRecord medicalRecord){
+    public MedicalRecord addMedicalRecord(MedicalRecord medicalRecord) {
         logger.debug("Try to add a new medical record {} {}", medicalRecord.getFirstName(), medicalRecord.getLastName());
         this.medicalRecordRepository.addMedicalRecord(medicalRecord);
         logger.debug("Medical record successfully added");
         return medicalRecord;
     }
 
-    public MedicalRecord updateMedicalrecord(MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
+    public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
         logger.debug("Try to update the medical record of {} {}", medicalRecord.getFirstName(), medicalRecord.getLastName());
-        this.findMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName());
-        this.medicalRecordRepository.updateMedicalRecord(medicalRecord);
-        logger.debug("Medical record successfully updated");
+        MedicalRecord medicalRecordToUpdate = this.findMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName());
+        medicalRecordToUpdate.setBirthdate(medicalRecord.getBirthdate());
+        medicalRecordToUpdate.setAllergies(medicalRecord.getAllergies());
+        medicalRecordToUpdate.setMedications(medicalRecord.getMedications());
+        if (!Objects.isNull(medicalRecordToUpdate)) {
+            this.medicalRecordRepository.updateMedicalRecord(medicalRecordToUpdate);
+            logger.debug("Medical record successfully updated");
+        }
         return medicalRecord;
     }
 
@@ -43,8 +50,8 @@ public class MedicalRecordService {
 
     public MedicalRecord findMedicalRecordByFirstNameAndLastName(String firstName, String lastName) throws MedicalRecordNotFoundException {
         logger.debug("Try to find the medical record of {} {}", firstName, lastName);
-        MedicalRecord medicalRecordFound = this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(firstName,lastName);
-        if (medicalRecordFound == null){
+        MedicalRecord medicalRecordFound = this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(firstName, lastName);
+        if (medicalRecordFound == null) {
             logger.error("Medical record not found for {} {}", firstName, lastName);
             throw new MedicalRecordNotFoundException("Medical record not found for " + firstName + " " + lastName);
         }

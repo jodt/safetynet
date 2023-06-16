@@ -19,27 +19,25 @@ public class MedicalRecordRepository {
         this.medicalRecords = medicalRecords;
     }
 
-    public MedicalRecord addMedicalRecord (MedicalRecord medicalRecord){
+    public MedicalRecord addMedicalRecord(MedicalRecord medicalRecord) {
         this.medicalRecords.add(medicalRecord);
         return medicalRecord;
     }
 
-    public void deleteMedicalRecord (MedicalRecord medicalRecord){
+    public void deleteMedicalRecord(MedicalRecord medicalRecord) {
         this.medicalRecords.remove(medicalRecord);
     }
 
-    public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord){
-        MedicalRecord updateMedicalRecord = this.findMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(),medicalRecord.getLastName());
-        updateMedicalRecord.setBirthdate(medicalRecord.getBirthdate());
-        updateMedicalRecord.setAllergies(medicalRecord.getAllergies());
-        updateMedicalRecord.setMedications(medicalRecord.getMedications());
-        return updateMedicalRecord;
+    public MedicalRecord updateMedicalRecord(MedicalRecord updatedMedicalRecord) {
+        int index = this.medicalRecords.indexOf(this.findMedicalRecordByFirstNameAndLastName(updatedMedicalRecord.getFirstName(), updatedMedicalRecord.getLastName()));
+        this.medicalRecords.set(index, updatedMedicalRecord);
+        return updatedMedicalRecord;
     }
 
     public MedicalRecord findMedicalRecordByFirstNameAndLastName(String firstName, String lastName) {
         MedicalRecord medicalRecordResult = null;
-        for (MedicalRecord medicalRecord : this.medicalRecords){
-            if (medicalRecord.getFirstName().toLowerCase().equals(firstName.toLowerCase()) && medicalRecord.getLastName().toLowerCase().equals(lastName.toLowerCase())){
+        for (MedicalRecord medicalRecord : this.medicalRecords) {
+            if (medicalRecord.getFirstName().toLowerCase().equals(firstName.toLowerCase()) && medicalRecord.getLastName().toLowerCase().equals(lastName.toLowerCase())) {
                 medicalRecordResult = medicalRecord;
             }
         }
