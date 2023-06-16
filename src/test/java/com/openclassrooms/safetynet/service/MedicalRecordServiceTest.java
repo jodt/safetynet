@@ -72,11 +72,8 @@ class MedicalRecordServiceTest {
          MedicalRecord result = this.medicalRecordService.addMedicalRecord(medicalRecord);
 
          assertNotNull(result);
-         assertEquals("firstname", result.getFirstName());
-         assertEquals("lastname", result.getLastName());
-         assertEquals(LocalDate.of(2000,01,01), result.getBirthdate());
-         assertEquals("aznol:350mg", result.getMedications().get(0));
-         assertEquals("nillacilan", result.getAllergies().get(0));
+
+         assertEquals(medicalRecord,result);
 
          verify(this.medicalRecordRepository, times(1)).addMedicalRecord(any(MedicalRecord.class));
 
@@ -92,12 +89,8 @@ class MedicalRecordServiceTest {
         MedicalRecord result = this.medicalRecordService.updateMedicalRecord(updatedMedicalRecord);
 
         assertNotNull(result);
-        assertNotNull(result);
-        assertEquals("firstname", result.getFirstName());
-        assertEquals("lastname", result.getLastName());
-        assertEquals(LocalDate.of(2000,01,01), result.getBirthdate());
-        assertEquals("aznol:350mg", result.getMedications().get(0));
-        assertEquals("peanut", result.getAllergies().get(0));
+
+        assertEquals(updatedMedicalRecord,result);
 
         verify(this.medicalRecordRepository, times(1)).findMedicalRecordByFirstNameAndLastName(anyString(),anyString());
         verify(this.medicalRecordRepository, times(1)).updateMedicalRecord(any(MedicalRecord.class));
@@ -128,12 +121,8 @@ class MedicalRecordServiceTest {
         MedicalRecord result = this.medicalRecordService.findMedicalRecordByFirstNameAndLastName("firstname","lastname");
 
         assertNotNull(result);
-        assertNotNull(result);
-        assertEquals("firstname", result.getFirstName());
-        assertEquals("lastname", result.getLastName());
-        assertEquals(LocalDate.of(2000,01,01), result.getBirthdate());
-        assertEquals("aznol:350mg", result.getMedications().get(0));
-        assertEquals("nillacilan", result.getAllergies().get(0));
+
+        assertEquals(medicalRecord,result);
 
         verify(this.medicalRecordRepository, times(1)).findMedicalRecordByFirstNameAndLastName(anyString(),anyString());
 
