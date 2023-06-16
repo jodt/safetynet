@@ -65,7 +65,7 @@ public class PersonService {
         this.personRepository.deletePerson(personFound);
     }
 
-    public PersonsConcernedByFireStation findPeopleConcernedByFireStation(int number) throws FireStationNotFoundException {
+    public PersonsConcernedByFireStationDTO findPeopleConcernedByFireStation(int number) throws FireStationNotFoundException {
         AtomicInteger adults = new AtomicInteger(0);
         AtomicInteger children = new AtomicInteger(0);
 
@@ -88,7 +88,7 @@ public class PersonService {
             }
         });
 
-        return new PersonsConcernedByFireStation(personWithAddressAndPhoneDTOList, children, adults);
+        return new PersonsConcernedByFireStationDTO(personWithAddressAndPhoneDTOList, children, adults);
     }
 
     public List<PersonWithAgeAndFamilyMembersDTO> findChildrenByAddress(String address) throws MedicalRecordNotFoundException, PersonNotFoundException {

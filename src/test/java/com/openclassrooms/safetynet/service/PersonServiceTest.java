@@ -237,7 +237,7 @@ class PersonServiceTest {
         when(this.personMapper.asPersonWithAddressAndPhoneDTO(person1, medicalRecord1)).thenReturn(person1DTO);
         when(this.personMapper.asPersonWithAddressAndPhoneDTO(child, childMedicalRecord)).thenReturn(childDTO);
 
-        PersonsConcernedByFireStation result = this.personService.findPeopleConcernedByFireStation(1);
+        PersonsConcernedByFireStationDTO result = this.personService.findPeopleConcernedByFireStation(1);
 
         assertNotNull(result);
         assertEquals(2, result.getPersonWithAddressAndPhoneDTOList().size());

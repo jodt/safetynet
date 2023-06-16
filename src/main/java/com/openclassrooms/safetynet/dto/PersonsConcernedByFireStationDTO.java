@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 @AllArgsConstructor
-public class PersonsConcernedByFireStation {
+public class PersonsConcernedByFireStationDTO {
     private List<PersonWithAddressAndPhoneDTO> personWithAddressAndPhoneDTOList;
     private AtomicInteger children;
     private AtomicInteger adults;
