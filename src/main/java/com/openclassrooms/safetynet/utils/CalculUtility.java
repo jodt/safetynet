@@ -13,7 +13,7 @@ public class CalculUtility {
     public static int calculateAgeOfPerson(LocalDate birthdate){
         logger.debug("Calulate age of the person");
         LocalDate today = LocalDate.now();
-        if (birthdate != null && today != null){
+        if (birthdate != null){
             logger.debug("age calculated successfully");
             return Period.between(birthdate,today).getYears();
         } else {
