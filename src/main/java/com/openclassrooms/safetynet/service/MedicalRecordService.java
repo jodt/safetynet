@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -19,6 +20,10 @@ public class MedicalRecordService {
 
     public MedicalRecordService(MedicalRecordRepository medicalRecordRepository) {
         this.medicalRecordRepository = medicalRecordRepository;
+    }
+
+    public List<MedicalRecord> getAllMedicalRecords() {
+        return this.medicalRecordRepository.getMedicalRecords();
     }
 
     public MedicalRecord addMedicalRecord(MedicalRecord medicalRecord) {
