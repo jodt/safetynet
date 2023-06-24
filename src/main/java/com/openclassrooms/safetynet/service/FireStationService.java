@@ -20,6 +20,10 @@ public class FireStationService {
         this.fireStationRepository = fireStationRepository;
     }
 
+    public List<FireStation> geAllFireStation() {
+        return this.fireStationRepository.getFireStations();
+    }
+
     public FireStation addFireStation(FireStation fireStation) {
         logger.debug("Try to add a new fire station");
         this.fireStationRepository.addFireStation(fireStation);
@@ -38,7 +42,7 @@ public class FireStationService {
         return fireStation;
     }
 
-    public void deleteFireStationByStationNumber(int stationNumber) throws FireStationNotFoundException {
+    public void deleteFireStationsByStationNumber(int stationNumber) throws FireStationNotFoundException {
         logger.debug("Try to delete the fire stations with the station's number {}", stationNumber);
         List<FireStation> fireStationToDelete = this.getFireStationByStationNumber(stationNumber);
         logger.debug("Fire stations successfully deleted");
