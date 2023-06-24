@@ -1,5 +1,6 @@
 package com.openclassrooms.safetynet.controller;
 
+import com.openclassrooms.safetynet.dto.PersonsConcernedByFireStationDTO;
 import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.exception.MailsNotFoundException;
 import com.openclassrooms.safetynet.exception.PersonNotFoundException;
@@ -18,19 +19,17 @@ import java.util.List;
 @RestController
 public class PersonController {
     private final Logger logger = LoggerFactory.getLogger(PersonController.class);
-    private final PersonRepository personRepository;
     private final PersonService personService;
 
 
     public PersonController(PersonRepository personRepository, PersonService personService) {
-        this.personRepository = personRepository;
         this.personService = personService;
     }
 
-    @GetMapping("/")
-    public List<Person>getPersons() {
+    @GetMapping("/person/all")
+    public List<Person> getPersons() {
         logger.info("Start process to collect all persons");
-        return this.personRepository.getPersons();
+        return this.personService.getAllPerson();
     }
 
     @PostMapping("/person")
@@ -51,8 +50,8 @@ public class PersonController {
 
     @DeleteMapping("/person")
     public ResponseEntity<Object> deletePerson(@RequestParam String firstName, @RequestParam String lastName) throws Exception {
-        logger.info("Start process to delete the person: {} {}", firstName,lastName);
-        this.personService.deletePerson(firstName,lastName);
+        logger.info("Start process to delete the person: {} {}", firstName, lastName);
+        this.personService.deletePerson(firstName, lastName);
         logger.info("Process end successfully");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -64,11 +63,11 @@ public class PersonController {
     }
 
     @GetMapping("/firestation")
-    public Object getPeopleConcernedByFiresStation(@RequestParam int stationNumber) throws FireStationNotFoundException {
-        logger.info("Start process to delete the fire station with the number {} ", stationNumber);
-        Object personsListWithMajorAndMinorDetails = this.personService.findPeopleConcernedByFireStation(stationNumber);
+    public PersonsConcernedByFireStationDTO getPeopleConcernedByFiresStation(@RequestParam int stationNumber) throws FireStationNotFoundException {
+        logger.info("Start process to get people concerned by the fire station number {} ", stationNumber);
+        PersonsConcernedByFireStationDTO personsConcernedByFireStation = this.personService.findPeopleConcernedByFireStation(stationNumber);
         logger.info("Process end successfully");
-        return personsListWithMajorAndMinorDetails;
+        return personsConcernedByFireStation;
     }
 
 
