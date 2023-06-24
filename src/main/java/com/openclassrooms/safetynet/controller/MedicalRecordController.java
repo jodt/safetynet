@@ -17,18 +17,16 @@ import java.util.List;
 public class MedicalRecordController {
 
     private final Logger logger = LoggerFactory.getLogger(MedicalRecordController.class);
-    private final MedicalRecordRepository medicalRecordRepository;
     private final MedicalRecordService medicalRecordService;
 
     public MedicalRecordController(MedicalRecordRepository medicalRecordRepository, MedicalRecordService medicalRecordService) {
-        this.medicalRecordRepository = medicalRecordRepository;
         this.medicalRecordService = medicalRecordService;
     }
 
-    @GetMapping()
+    @GetMapping("/all")
     public List<MedicalRecord> getMedicalRecords(){
         logger.info("Start process to collect all Medical Records");
-        return medicalRecordRepository.getMedicalRecords();
+        return this.medicalRecordService.getAllMedicalRecords();
     }
 
     @PostMapping()
@@ -42,13 +40,13 @@ public class MedicalRecordController {
     @PutMapping()
     public ResponseEntity<MedicalRecord> updateMedicalRecord(@RequestBody MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
         logger.info("Start process to update the medical record of {} {}", medicalRecord.getFirstName(),medicalRecord.getLastName());
-        this.medicalRecordService.updateMedicalrecord(medicalRecord);
+        this.medicalRecordService.updateMedicalRecord(medicalRecord);
         logger.info("Process end successfully");
         return new ResponseEntity<>(medicalRecord, HttpStatus.OK);
     }
 
     @DeleteMapping()
-    public ResponseEntity<Object> deleteMedicalrecord(@RequestParam String firstName, @RequestParam String lastName) throws MedicalRecordNotFoundException {
+    public ResponseEntity<Object> deleteMedicalRecord(@RequestParam String firstName, @RequestParam String lastName) throws MedicalRecordNotFoundException {
         logger.info("Start process to delete the medical record of {} {}", firstName, lastName);
         this.medicalRecordService.deleteMedicalRecord(firstName,lastName);
         logger.info("Process end successfully");
