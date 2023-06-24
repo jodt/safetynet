@@ -28,7 +28,7 @@ public class VariousController {
 
 
     @GetMapping("/fire")
-    public FireDTO getPeoplePeopleInFireCase(@RequestParam String address) throws PersonNotFoundException, FireStationNotFoundException {
+    public FireDTO getPeopleListInFireCase(@RequestParam String address) throws PersonNotFoundException, FireStationNotFoundException {
         logger.info("Start process to retrieve people at {} in the event of fire", address);
         FireDTO peopleList = this.personService.findAllPeopleInFireCase(address);
         logger.info("Process end successfully");
@@ -36,7 +36,7 @@ public class VariousController {
     }
 
     @GetMapping("/flood/stations")
-    public Map<String,List<PersonWithMedicalRecordDTO>> getAllPeopleConcernedByFireStations(@RequestParam List<Integer> stations) throws PersonNotFoundException, FireStationNotFoundException {
+    public Map<String,List<PersonWithMedicalRecordDTO>> getPeopleListInFloodCase(@RequestParam List<Integer> stations) throws PersonNotFoundException, FireStationNotFoundException {
         stations.forEach(station -> logger.info("Start process to find people concerned by the fire station number {} in the event of flooding", station));
         Map <String,List<PersonWithMedicalRecordDTO>> peopleList = this.personService.findAllPeopleInFloodCase(stations);
         if (Objects.isNull(peopleList)){
