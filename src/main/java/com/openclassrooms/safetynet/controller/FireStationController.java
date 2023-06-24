@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/firestation")
 public class FireStationController {
@@ -16,15 +18,19 @@ public class FireStationController {
     private final Logger logger = LoggerFactory.getLogger(FireStationController.class);
     private final FireStationService fireStationService;
 
-
     public FireStationController(FireStationService fireStationService) {
 
         this.fireStationService = fireStationService;
     }
 
 
+    @GetMapping("/all")
+    public List<FireStation> getAllFireStations() {
+        return this.fireStationService.geAllFireStation();
+    }
+
     @PostMapping
-    public ResponseEntity<FireStation> addFireStation(@RequestBody FireStation fireStation){
+    public ResponseEntity<FireStation> addFireStation(@RequestBody FireStation fireStation) {
         logger.info("Start process to add a new fire station for the address {} with the station's number {}", fireStation.getAddress(), fireStation.getStation());
         this.fireStationService.addFireStation(fireStation);
         logger.info("Process end successfully");
@@ -48,13 +54,12 @@ public class FireStationController {
     }
 
     @DeleteMapping("{stationNumber}")
-    public ResponseEntity<Object> deleteFireStationByStationNumber(@PathVariable int stationNumber) throws FireStationNotFoundException {
+    public ResponseEntity<Object> deleteFireStationsByStationNumber(@PathVariable int stationNumber) throws FireStationNotFoundException {
         logger.info("Start process to delete the fire station with the number {} ", stationNumber);
-        this.fireStationService.deleteFireStationByStationNumber(stationNumber);
+        this.fireStationService.deleteFireStationsByStationNumber(stationNumber);
         logger.info("Process end successfully");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 
 
 }
