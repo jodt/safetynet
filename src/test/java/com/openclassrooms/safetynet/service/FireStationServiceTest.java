@@ -101,7 +101,7 @@ class FireStationServiceTest {
 
         when(this.fireStationRepository.getFireStationsByNumber(any(Integer.class))).thenReturn(fireStationsToDelete);
 
-        this.fireStationService.deleteFireStationByStationNumber(any(Integer.class));
+        this.fireStationService.deleteFireStationsByStationNumber(any(Integer.class));
 
         verify(this.fireStationRepository, times(1)).deleteStations(fireStationsToDelete);
 
