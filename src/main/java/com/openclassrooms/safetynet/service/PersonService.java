@@ -37,6 +37,9 @@ public class PersonService {
         this.personMapper = personMapper;
     }
 
+    public List<Person> getAllPerson(){
+        return this.personRepository.getPersons();
+    }
 
     public Person addPerson(Person person) {
         logger.debug("Try to add the person {} {}", person.getFirstName(), person.getLastName());
