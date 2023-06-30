@@ -62,6 +62,23 @@ class MedicalRecordServiceTest {
     }
 
 
+    @DisplayName("should get all medical records")
+    @Test
+    void shouldGetAllMedicalRecords() {
+
+        when(this.medicalRecordRepository.getMedicalRecords()).thenReturn(List.of(medicalRecord));
+
+        List<MedicalRecord> result = this.medicalRecordServiceImpl.getAllMedicalRecords();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(medicalRecord, result.get(0));
+
+        verify(this.medicalRecordRepository,times(1)).getMedicalRecords();
+
+    }
+
+
     @DisplayName("Should add a medical record")
     @Test
     void shouldAddAMedicalRecord() {
