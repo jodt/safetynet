@@ -15,6 +15,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
@@ -55,6 +58,23 @@ class FireStationControllerTest {
                 .station(1)
                 .address("fire station address")
                 .build();
+    }
+
+
+    @DisplayName("Should get all fire stations")
+    @Test
+    void shouldGetAllFireStations() throws Exception {
+
+        when(this.fireStationService.getAllFireStation()).thenReturn(List.of(fireStation));
+
+        mockMvc.perform(get("/firestation/all"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(1)))
+                .andExpect(jsonPath("$[0].station", is(1)))
+                .andExpect(jsonPath("$[0].address", is("fire station address")));
+
+        verify(this.fireStationService,times(1)).getAllFireStation();
+
     }
 
 
