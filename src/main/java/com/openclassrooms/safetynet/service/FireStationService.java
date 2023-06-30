@@ -7,7 +7,7 @@ import java.util.List;
 
 
 public interface FireStationService {
-    public List<FireStation> geAllFireStation();
+    public List<FireStation> getAllFireStation();
 
     public FireStation addFireStation(FireStation fireStation);
 
