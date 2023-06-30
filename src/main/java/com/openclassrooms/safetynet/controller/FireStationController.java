@@ -1,5 +1,6 @@
 package com.openclassrooms.safetynet.controller;
 
+import com.openclassrooms.safetynet.exception.FireStationAlreadyExistException;
 import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.model.FireStation;
 import com.openclassrooms.safetynet.service.FireStationService;
@@ -30,7 +31,7 @@ public class FireStationController {
     }
 
     @PostMapping
-    public ResponseEntity<FireStation> addFireStation(@RequestBody FireStation fireStation) {
+    public ResponseEntity<FireStation> addFireStation(@RequestBody FireStation fireStation) throws FireStationAlreadyExistException {
         logger.info("Start process to add a new fire station for the address {} with the station's number {}", fireStation.getAddress(), fireStation.getStation());
         this.fireStationService.addFireStation(fireStation);
         logger.info("Process end successfully");

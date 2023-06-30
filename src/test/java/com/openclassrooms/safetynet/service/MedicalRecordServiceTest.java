@@ -1,5 +1,6 @@
 package com.openclassrooms.safetynet.service;
 
+import com.openclassrooms.safetynet.exception.MedicalRecordAlreadyExistException;
 import com.openclassrooms.safetynet.exception.MedicalRecordNotFoundException;
 import com.openclassrooms.safetynet.model.MedicalRecord;
 import com.openclassrooms.safetynet.repository.MedicalRecordRepository;
@@ -81,7 +82,7 @@ class MedicalRecordServiceTest {
 
     @DisplayName("Should add a medical record")
     @Test
-    void shouldAddAMedicalRecord() {
+    void shouldAddAMedicalRecord() throws MedicalRecordAlreadyExistException {
 
          when(this.medicalRecordRepository.addMedicalRecord(any(MedicalRecord.class))).thenReturn(medicalRecord);
 

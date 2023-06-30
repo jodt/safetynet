@@ -1,10 +1,7 @@
 package com.openclassrooms.safetynet.service;
 
 import com.openclassrooms.safetynet.dto.*;
-import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
-import com.openclassrooms.safetynet.exception.MailsNotFoundException;
-import com.openclassrooms.safetynet.exception.MedicalRecordNotFoundException;
-import com.openclassrooms.safetynet.exception.PersonNotFoundException;
+import com.openclassrooms.safetynet.exception.*;
 import com.openclassrooms.safetynet.model.FireStation;
 import com.openclassrooms.safetynet.model.MedicalRecord;
 import com.openclassrooms.safetynet.model.Person;
@@ -42,11 +39,18 @@ public class PersonServiceImpl implements PersonService {
         return this.personRepository.getPersons();
     }
 
-    public Person addPerson(Person person) {
+    public Person addPerson(Person person) throws PersonAlreadyExistException {
         logger.debug("Try to add the person {} {}", person.getFirstName(), person.getLastName());
-        this.personRepository.addPerson(person);
-        logger.debug("Person successfully added");
-        return person;
+        Boolean isPersonAlreadyRegistered = this.checkIfPersonAlreadyExist(person);
+        if(isPersonAlreadyRegistered) {
+            logger.error("{} {} is already registered", person.getFirstName(),person.getLastName());
+            throw new PersonAlreadyExistException(person.getFirstName() + " "+ person.getLastName() + " is already registered");
+        } else {
+            this.personRepository.addPerson(person);
+            logger.debug("Person successfully added");
+            return person;
+        }
+
     }
 
     public Person updatePerson(Person person) throws PersonNotFoundException {
@@ -291,6 +295,10 @@ public class PersonServiceImpl implements PersonService {
             logger.error("Not medical Record Found for {} {}", person.getFirstName(), person.getLastName());
             return null;
         }
+    }
+
+    private Boolean checkIfPersonAlreadyExist (Person person) {
+        return this.personRepository.findPersonByFirstNameAndLastName(person.getFirstName(),person.getLastName()) != null;
     }
 
 

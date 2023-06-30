@@ -1,5 +1,6 @@
 package com.openclassrooms.safetynet.controller;
 
+import com.openclassrooms.safetynet.exception.MedicalRecordAlreadyExistException;
 import com.openclassrooms.safetynet.exception.MedicalRecordNotFoundException;
 import com.openclassrooms.safetynet.model.MedicalRecord;
 import com.openclassrooms.safetynet.repository.MedicalRecordRepository;
@@ -30,7 +31,7 @@ public class MedicalRecordController {
     }
 
     @PostMapping()
-    public ResponseEntity<MedicalRecord> addMedicalRecord(@RequestBody MedicalRecord medicalRecord){
+    public ResponseEntity<MedicalRecord> addMedicalRecord(@RequestBody MedicalRecord medicalRecord) throws MedicalRecordAlreadyExistException {
         logger.info("Start process to add a new medical record for {} {}", medicalRecord.getFirstName(), medicalRecord.getLastName());
         this.medicalRecordService.addMedicalRecord(medicalRecord);
         logger.info("Process end successfully");

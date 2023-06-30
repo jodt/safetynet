@@ -1,7 +1,9 @@
 package com.openclassrooms.safetynet.service;
 
+import com.openclassrooms.safetynet.exception.MedicalRecordAlreadyExistException;
 import com.openclassrooms.safetynet.exception.MedicalRecordNotFoundException;
 import com.openclassrooms.safetynet.model.MedicalRecord;
+import com.openclassrooms.safetynet.model.Person;
 import com.openclassrooms.safetynet.repository.MedicalRecordRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +28,19 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         return this.medicalRecordRepository.getMedicalRecords();
     }
 
-    public MedicalRecord addMedicalRecord(MedicalRecord medicalRecord) {
-        logger.debug("Try to add a new medical record {} {}", medicalRecord.getFirstName(), medicalRecord.getLastName());
-        this.medicalRecordRepository.addMedicalRecord(medicalRecord);
-        logger.debug("Medical record successfully added");
-        return medicalRecord;
+    public MedicalRecord addMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordAlreadyExistException {
+        Boolean isMedicalRecordAlreadyRegistered = this.checkIfMedicalRecordAlreadyExist(medicalRecord);
+        if(isMedicalRecordAlreadyRegistered){
+            logger.error("The medical record of {} {} already exist", medicalRecord.getFirstName(),medicalRecord.getLastName());
+            throw new MedicalRecordAlreadyExistException("The medical record of " + medicalRecord.getFirstName() + " " + medicalRecord.getLastName() + " already exist");
+        } else {
+            logger.debug("Try to add a new medical record {} {}", medicalRecord.getFirstName(), medicalRecord.getLastName());
+            this.medicalRecordRepository.addMedicalRecord(medicalRecord);
+            logger.debug("Medical record successfully added");
+            return medicalRecord;
+        }
     }
+
 
     public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
         logger.debug("Try to update the medical record of {} {}", medicalRecord.getFirstName(), medicalRecord.getLastName());
@@ -62,6 +71,10 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         }
         logger.debug("Medical record found for {} {}", firstName, lastName);
         return medicalRecordFound;
+    }
+
+    private Boolean checkIfMedicalRecordAlreadyExist (MedicalRecord medicalRecord) {
+        return this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(),medicalRecord.getLastName()) != null;
     }
 
 

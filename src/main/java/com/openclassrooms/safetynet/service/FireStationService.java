@@ -1,5 +1,6 @@
 package com.openclassrooms.safetynet.service;
 
+import com.openclassrooms.safetynet.exception.FireStationAlreadyExistException;
 import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.model.FireStation;
 
@@ -9,7 +10,7 @@ import java.util.List;
 public interface FireStationService {
     public List<FireStation> getAllFireStation();
 
-    public FireStation addFireStation(FireStation fireStation);
+    public FireStation addFireStation(FireStation fireStation) throws FireStationAlreadyExistException;
 
     public FireStation updateStationNumber(FireStation fireStation) throws FireStationNotFoundException;
 

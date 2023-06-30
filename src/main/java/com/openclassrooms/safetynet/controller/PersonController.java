@@ -3,6 +3,7 @@ package com.openclassrooms.safetynet.controller;
 import com.openclassrooms.safetynet.dto.PersonsConcernedByFireStationDTO;
 import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.exception.MailsNotFoundException;
+import com.openclassrooms.safetynet.exception.PersonAlreadyExistException;
 import com.openclassrooms.safetynet.exception.PersonNotFoundException;
 import com.openclassrooms.safetynet.model.Person;
 import com.openclassrooms.safetynet.repository.PersonRepository;
@@ -33,7 +34,7 @@ public class PersonController {
     }
 
     @PostMapping("/person")
-    public ResponseEntity<Person> addPerson(@RequestBody Person person) {
+    public ResponseEntity<Person> addPerson(@RequestBody Person person) throws PersonAlreadyExistException {
         logger.info("Start process to add a new person {} {}", person.getFirstName(), person.getLastName());
         this.personService.addPerson(person);
         logger.info("Process end successfully");

@@ -1,5 +1,6 @@
 package com.openclassrooms.safetynet.service;
 
+import com.openclassrooms.safetynet.exception.FireStationAlreadyExistException;
 import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.model.FireStation;
 import com.openclassrooms.safetynet.repository.FireStationRepository;
@@ -77,7 +78,7 @@ class FireStationServiceTest {
 
     @Test
     @DisplayName("Should add a fire station")
-    public void shouldAddFireStation() {
+    public void shouldAddFireStation() throws FireStationAlreadyExistException {
 
         when(this.fireStationRepository.addFireStation(any(FireStation.class))).thenReturn(fireStation1);
 

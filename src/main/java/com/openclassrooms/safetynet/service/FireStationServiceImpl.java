@@ -1,7 +1,9 @@
 package com.openclassrooms.safetynet.service;
 
+import com.openclassrooms.safetynet.exception.FireStationAlreadyExistException;
 import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.model.FireStation;
+import com.openclassrooms.safetynet.model.MedicalRecord;
 import com.openclassrooms.safetynet.repository.FireStationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,11 +26,17 @@ public class FireStationServiceImpl implements FireStationService {
         return this.fireStationRepository.getFireStations();
     }
 
-    public FireStation addFireStation(FireStation fireStation) {
-        logger.debug("Try to add a new fire station");
-        this.fireStationRepository.addFireStation(fireStation);
-        logger.debug("Fire station successfully added");
-        return fireStation;
+    public FireStation addFireStation(FireStation fireStation) throws FireStationAlreadyExistException {
+        Boolean isFireStationAlreadyRegistered = this.checkIfFireStationAlreadyExist(fireStation);
+        if(isFireStationAlreadyRegistered){
+            logger.error("Fire station with the number {} and the address {} is already registered", fireStation.getStation(),fireStation.getAddress());
+            throw new FireStationAlreadyExistException("Fire station with the number " + fireStation.getStation() + " and the address " + fireStation.getAddress() + " is already registered");
+        } else {
+            logger.debug("Try to add a new fire station");
+            this.fireStationRepository.addFireStation(fireStation);
+            logger.debug("Fire station successfully added");
+            return fireStation;
+        }
     }
 
     public FireStation updateStationNumber(FireStation fireStation) throws FireStationNotFoundException {
@@ -76,5 +84,9 @@ public class FireStationServiceImpl implements FireStationService {
         }
         logger.debug("Fire stations found with the station's number {}", stationNumber);
         return fireStationResult;
+    }
+
+    private Boolean checkIfFireStationAlreadyExist (FireStation fireStation) {
+        return this.fireStationRepository.getFireStationByNumberAndAddress(fireStation) != null;
     }
 }

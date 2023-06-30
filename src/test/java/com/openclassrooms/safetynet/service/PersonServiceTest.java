@@ -1,10 +1,7 @@
 package com.openclassrooms.safetynet.service;
 
 import com.openclassrooms.safetynet.dto.*;
-import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
-import com.openclassrooms.safetynet.exception.MailsNotFoundException;
-import com.openclassrooms.safetynet.exception.MedicalRecordNotFoundException;
-import com.openclassrooms.safetynet.exception.PersonNotFoundException;
+import com.openclassrooms.safetynet.exception.*;
 import com.openclassrooms.safetynet.model.FireStation;
 import com.openclassrooms.safetynet.model.MedicalRecord;
 import com.openclassrooms.safetynet.model.Person;
@@ -187,7 +184,7 @@ class PersonServiceTest {
 
     @DisplayName("Should add a person")
     @Test
-    void addPerson() {
+    void addPerson() throws PersonAlreadyExistException {
 
         when(this.personRepository.addPerson(any(Person.class))).thenReturn(person1);
 

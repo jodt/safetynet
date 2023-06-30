@@ -59,4 +59,15 @@ public class FireStationRepository {
         this.firestations.set(index, updatedFireStation);
         return updatedFireStation;
     }
+
+    public FireStation getFireStationByNumberAndAddress(FireStation fireStationToRetrieve){
+        FireStation result = null;
+        for (FireStation fireStation : this.firestations){
+            if(fireStation.getStation() == fireStationToRetrieve.getStation() && fireStation.getAddress().toLowerCase().equals(fireStationToRetrieve.getAddress().toLowerCase())){
+                result = fireStation;
+            }
+        }
+        return result;
+    }
+
 }

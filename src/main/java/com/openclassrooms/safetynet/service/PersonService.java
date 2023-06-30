@@ -1,10 +1,7 @@
 package com.openclassrooms.safetynet.service;
 
 import com.openclassrooms.safetynet.dto.*;
-import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
-import com.openclassrooms.safetynet.exception.MailsNotFoundException;
-import com.openclassrooms.safetynet.exception.MedicalRecordNotFoundException;
-import com.openclassrooms.safetynet.exception.PersonNotFoundException;
+import com.openclassrooms.safetynet.exception.*;
 import com.openclassrooms.safetynet.model.Person;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +14,7 @@ public interface PersonService {
 
     public List<Person> getAllPerson();
 
-    public Person addPerson(Person person);
+    public Person addPerson(Person person) throws PersonAlreadyExistException;
 
     public Person updatePerson(Person person) throws PersonNotFoundException;
 

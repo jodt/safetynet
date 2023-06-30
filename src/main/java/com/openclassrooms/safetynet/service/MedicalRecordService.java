@@ -1,5 +1,6 @@
 package com.openclassrooms.safetynet.service;
 
+import com.openclassrooms.safetynet.exception.MedicalRecordAlreadyExistException;
 import com.openclassrooms.safetynet.exception.MedicalRecordNotFoundException;
 import com.openclassrooms.safetynet.model.MedicalRecord;
 
@@ -9,7 +10,7 @@ public interface MedicalRecordService {
 
     public List<MedicalRecord> getAllMedicalRecords();
 
-    public MedicalRecord addMedicalRecord(MedicalRecord medicalRecord);
+    public MedicalRecord addMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordAlreadyExistException;
 
     public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordNotFoundException;
 
