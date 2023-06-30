@@ -5,6 +5,7 @@ import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.exception.MailsNotFoundException;
 import com.openclassrooms.safetynet.exception.MedicalRecordNotFoundException;
 import com.openclassrooms.safetynet.exception.PersonNotFoundException;
+import com.openclassrooms.safetynet.model.FireStation;
 import com.openclassrooms.safetynet.model.MedicalRecord;
 import com.openclassrooms.safetynet.model.Person;
 import com.openclassrooms.safetynet.repository.PersonRepository;
@@ -135,16 +136,20 @@ public class PersonServiceImpl implements PersonService {
 
         List<String> addresses = getAddressesByStationNumber(number);
 
-        logger.debug("Try to retrieve the telephone numbers of the people concerned by the fire station number {}", number);
-        List<String> phoneNumber = this.personRepository.getPersons().stream()
-                .filter(person -> addresses.stream()
-                        .anyMatch(address -> person.getAddress().equals(address))) //filter people based on retrieved addresses
-                .map(person -> person.getPhone())//Get people's phone number
-                .distinct()
-                .collect(Collectors.toList());
+        if (addresses.isEmpty()){
+            throw new FireStationNotFoundException("Fire station not found with the number " + number);
+        } else {
+            logger.debug("Try to retrieve the telephone numbers of the people concerned by the fire station number {}", number);
+            List<String> phoneNumber = this.personRepository.getPersons().stream()
+                    .filter(person -> addresses.stream()
+                            .anyMatch(address -> person.getAddress().equals(address))) //filter people based on retrieved addresses
+                    .map(person -> person.getPhone())//Get people's phone number
+                    .distinct()
+                    .collect(Collectors.toList());
 
-        logger.debug("Phone numbers retrieved successfully");
-        return phoneNumber;
+            logger.debug("Phone numbers retrieved successfully");
+            return phoneNumber;
+        }
     }
 
 
@@ -163,7 +168,7 @@ public class PersonServiceImpl implements PersonService {
 
         Map<String, List<PersonWithMedicalRecordDTO>> personsListInFloodCaseDTO = new HashMap<>();
         List<String> addresses = fireStationsNumber.stream()
-                .map(station -> getFireStationAddresses(station))
+                .map(station -> getAddressesByStationNumber(station))
                 .flatMap(addressList -> addressList.stream())
                 .collect(Collectors.toList());
 
@@ -232,10 +237,16 @@ public class PersonServiceImpl implements PersonService {
         return personsFound;
     }
 
-    private List<String> getAddressesByStationNumber(int number) throws FireStationNotFoundException {
-        List<String> addresses = this.fireStationService.getFireStationByStationNumber(number).stream()
-                .map(fireStation -> fireStation.getAddress())//retrieve addresses of fire Stations
-                .collect(Collectors.toList());
+    private List<String> getAddressesByStationNumber(int number) {
+        List<String> addresses;
+        try {
+            addresses = this.fireStationService.getFireStationByStationNumber(number).stream()
+                    .map(fireStation -> fireStation.getAddress())//retrieve addresses of fire Stations
+                    .collect(Collectors.toList());
+            return addresses;
+        } catch (FireStationNotFoundException e) {
+            addresses = new ArrayList<>();
+        }
         return addresses;
     }
 
@@ -269,15 +280,6 @@ public class PersonServiceImpl implements PersonService {
         } catch (MedicalRecordNotFoundException e) {
             logger.error("Not medical Record Found for {} {}", person.getFirstName(), person.getLastName());
             return null;
-        }
-    }
-
-    private List<String> getFireStationAddresses(Integer station) {
-        try {
-            return this.getAddressesByStationNumber(station);
-        } catch (FireStationNotFoundException e) {
-            logger.error("Station not found with the number {}", station);
-            return new ArrayList<String>();
         }
     }
 
