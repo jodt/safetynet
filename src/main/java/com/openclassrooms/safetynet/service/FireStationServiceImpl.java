@@ -20,7 +20,7 @@ public class FireStationServiceImpl implements FireStationService {
         this.fireStationRepository = fireStationRepository;
     }
 
-    public List<FireStation> geAllFireStation() {
+    public List<FireStation> getAllFireStation() {
         return this.fireStationRepository.getFireStations();
     }
 
