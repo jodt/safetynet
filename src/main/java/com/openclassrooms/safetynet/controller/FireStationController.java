@@ -26,7 +26,7 @@ public class FireStationController {
 
     @GetMapping("/all")
     public List<FireStation> getAllFireStations() {
-        return this.fireStationService.geAllFireStation();
+        return this.fireStationService.getAllFireStation();
     }
 
     @PostMapping
