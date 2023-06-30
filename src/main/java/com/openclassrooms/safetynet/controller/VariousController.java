@@ -44,9 +44,10 @@ public class VariousController {
     }
 
     @GetMapping("/personInfo")
-    public List<PersonInfoDTO>getPersonInfo(@RequestParam String firstName, @RequestParam String lastName){
+    public List<PersonInfoDTO>getPersonInfo(@RequestParam String firstName, @RequestParam String lastName) throws PersonNotFoundException {
         logger.info("Start process to retrieve {} {}'s information", firstName,lastName);
         List<PersonInfoDTO> personInfoList = this.personService.getPersonInfo(firstName, lastName);
+        logger.info("Process end successfully");
         return personInfoList;
     }
 

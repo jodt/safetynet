@@ -188,11 +188,21 @@ public class PersonServiceImpl implements PersonService {
         return personsListInFloodCaseDTO;
     }
 
-    public List<PersonInfoDTO> getPersonInfo(String firstName, String lastName) {
-        return this.personRepository.getPersons().stream()
-                .filter(person -> (person.getFirstName().toLowerCase()).equals(firstName) && (person.getLastName().toLowerCase()).equals(lastName))
+    public List<PersonInfoDTO> getPersonInfo(String firstName, String lastName) throws PersonNotFoundException {
+        logger.debug("try to find person with firstname {} and lastname {}",firstName,lastName);
+        List<PersonInfoDTO> personInfoDTOList;
+        personInfoDTOList = this.personRepository.getPersons().stream()
+                .filter(person -> (person.getFirstName().toLowerCase()).equals(firstName.toLowerCase()) && (person.getLastName().toLowerCase()).equals(lastName.toLowerCase()))
                 .map(person -> createPersonInfoDTO(person))
                 .collect(Collectors.toList());
+        if(personInfoDTOList.isEmpty()){
+            logger.error("Nobody found with firstname {} and lastname {}", firstName,lastName);
+            throw new PersonNotFoundException("Nobody found with firstname " +firstName + " and lastname " + lastName);
+        }
+        else {
+            logger.debug("Person found successfully");
+        }
+        return personInfoDTOList;
     }
 
 

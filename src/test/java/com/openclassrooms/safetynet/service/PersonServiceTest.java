@@ -484,7 +484,7 @@ class PersonServiceTest {
 
 
     @Test
-    void ShouldGetPersonInfo() throws MedicalRecordNotFoundException {
+    void ShouldGetPersonInfo() throws MedicalRecordNotFoundException, PersonNotFoundException {
 
         PersonInfoDTO personInfoDTO1 = PersonInfoDTO.builder()
                 .lastName("lastname1")

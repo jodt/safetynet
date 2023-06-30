@@ -33,7 +33,7 @@ public interface PersonService {
 
     public Map<String, List<PersonWithMedicalRecordDTO>> findAllPeopleInFloodCase(List<Integer> fireStationsNumber) throws PersonNotFoundException;
 
-    public List<PersonInfoDTO> getPersonInfo(String firstName, String lastName);
+    public List<PersonInfoDTO> getPersonInfo(String firstName, String lastName) throws PersonNotFoundException;
 
     public List<String> getMailsByCity(String city) throws MailsNotFoundException;
 
