@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -62,6 +63,23 @@ class MedicalRecordControllerTest {
                 .medications(List.of("aznol:350mg"))
                 .allergies(List.of("nillacilan"))
                 .build();
+
+    }
+
+
+    @DisplayName("Should get all medical records")
+    @Test
+    void shouldGetMedicalRecords() throws Exception {
+
+        when(this.medicalRecordService.getAllMedicalRecords()).thenReturn(List.of(medicalRecord));
+
+        mockMvc.perform(get("/medicalRecord/all"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(1)))
+                .andExpect(jsonPath("$[0].firstName", is("firstname")))
+                .andExpect(jsonPath("$[0].lastName", is("lastname")));
+
+        verify(this.medicalRecordService,times(1)).getAllMedicalRecords();
 
     }
 
