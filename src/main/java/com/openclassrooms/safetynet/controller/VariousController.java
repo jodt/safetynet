@@ -39,14 +39,8 @@ public class VariousController {
     public Map<String,List<PersonWithMedicalRecordDTO>> getPeopleListInFloodCase(@RequestParam List<Integer> stations) throws PersonNotFoundException, FireStationNotFoundException {
         stations.forEach(station -> logger.info("Start process to find people concerned by the fire station number {} in the event of flooding", station));
         Map <String,List<PersonWithMedicalRecordDTO>> peopleList = this.personService.findAllPeopleInFloodCase(stations);
-        if (Objects.isNull(peopleList)){
-            logger.error("No fire stations found");
-            throw new FireStationNotFoundException("No fire stations found for these numbers");
-        }
-        else {
-            logger.info("Process end successfully");
-            return peopleList;
-        }
+        logger.info("Process end successfully");
+        return peopleList;
     }
 
     @GetMapping("/personInfo")
