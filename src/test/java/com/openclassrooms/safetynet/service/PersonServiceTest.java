@@ -165,9 +165,9 @@ class PersonServiceTest {
 
     @DisplayName("Should get all people")
     @Test
-    void shouldGetAllPerson(){
+    void shouldGetAllPerson() {
 
-        List<Person> personList = List.of(person1,person2,person3,child);
+        List<Person> personList = List.of(person1, person2, person3, child);
 
         when(this.personRepository.getPersons()).thenReturn(personList);
 
@@ -177,10 +177,10 @@ class PersonServiceTest {
         assertEquals(4, result.size());
         assertEquals(person1, result.get(0));
         assertEquals(person2, result.get(1));
-        assertEquals(person3,result.get(2));
+        assertEquals(person3, result.get(2));
         assertEquals(child, result.get(3));
 
-        verify(this.personRepository,times(1)).getPersons();
+        verify(this.personRepository, times(1)).getPersons();
 
     }
 
@@ -222,7 +222,7 @@ class PersonServiceTest {
     @Test
     void shouldNotUpdatePerson() throws PersonNotFoundException {
 
-        when(this.personRepository.findPersonByFirstNameAndLastName(anyString(),anyString())).thenReturn(null);
+        when(this.personRepository.findPersonByFirstNameAndLastName(anyString(), anyString())).thenReturn(null);
 
         Exception exception = assertThrows(PersonNotFoundException.class, () -> this.personServiceImpl.updatePerson(updatedPerson));
 
@@ -359,6 +359,27 @@ class PersonServiceTest {
         verify(this.personRepository, times(1)).getPersons();
     }
 
+
+    @DisplayName("Should not get all phone number of people concerned by a fire Station")
+    @Test
+    void ShouldNotFindPhoneNumberByFireStationNumber() throws FireStationNotFoundException {
+
+        FireStation fireStation = FireStation.builder()
+                .station(1)
+                .address("person address 1")
+                .build();
+
+        when(this.fireStationService.getFireStationByStationNumber(any(Integer.class))).thenThrow(FireStationNotFoundException.class);
+
+        Exception exception = assertThrows(FireStationNotFoundException.class, () -> this.personServiceImpl.findPhoneNumberByFireStationNumber(1));
+
+        assertEquals("Fire stations not found with the number 1", exception.getMessage());
+
+        verify(this.fireStationService, times(1)).getFireStationByStationNumber(any(Integer.class));
+        verify(this.personRepository, never()).getPersons();
+    }
+
+
     @DisplayName("Should get people list and number of the station in Fire Case")
     @Test
     void findAllPeopleInFireCase() throws MedicalRecordNotFoundException, FireStationNotFoundException, PersonNotFoundException {
@@ -401,6 +422,7 @@ class PersonServiceTest {
 
     }
 
+
     @DisplayName("Should not get people list and number of the station in Fire Case -> persons not found")
     @Test
     void shouldNotFindAllPeopleInFireCase() throws MedicalRecordNotFoundException, FireStationNotFoundException, PersonNotFoundException {
@@ -408,7 +430,7 @@ class PersonServiceTest {
 
         when(this.personRepository.findPersonsByAddress(anyString())).thenReturn(List.of());
 
-        Exception exception = assertThrows(PersonNotFoundException.class,() -> this.personServiceImpl.findAllPeopleInFireCase("person address 1"));
+        Exception exception = assertThrows(PersonNotFoundException.class, () -> this.personServiceImpl.findAllPeopleInFireCase("person address 1"));
 
         assertEquals("nobody found at person address 1", exception.getMessage());
 
@@ -476,15 +498,16 @@ class PersonServiceTest {
         when(this.fireStationService.getFireStationByStationNumber(1)).thenThrow(FireStationNotFoundException.class);
         when(this.fireStationService.getFireStationByStationNumber(2)).thenThrow(FireStationNotFoundException.class);
 
-        assertThrows(PersonNotFoundException.class,() -> personServiceImpl.findAllPeopleInFloodCase(stationNumberList));
+        assertThrows(PersonNotFoundException.class, () -> personServiceImpl.findAllPeopleInFloodCase(stationNumberList));
 
-        verify(this.fireStationService,times(2)).getFireStationByStationNumber(anyInt());
+        verify(this.fireStationService, times(2)).getFireStationByStationNumber(anyInt());
 
     }
 
 
+    @DisplayName("Should get person information")
     @Test
-    void ShouldGetPersonInfo() throws MedicalRecordNotFoundException, PersonNotFoundException {
+    void shouldGetPersonInfo() throws MedicalRecordNotFoundException, PersonNotFoundException {
 
         PersonInfoDTO personInfoDTO1 = PersonInfoDTO.builder()
                 .lastName("lastname1")
@@ -514,6 +537,41 @@ class PersonServiceTest {
         assertEquals(1, result.size());
         assertEquals(personInfoDTO2, result.get(0));
     }
+
+    @DisplayName("Should not get person information -> person not found")
+    @Test
+    void shouldNotGetPersonInfo() throws MedicalRecordNotFoundException {
+
+        PersonInfoDTO personInfoDTO1 = PersonInfoDTO.builder()
+                .lastName("lastname1")
+                .address("person address 1")
+                .age(23)
+                .email("person1@mail.com")
+                .medications(List.of("dodoxadin:30mg"))
+                .allergies(List.of("peanut"))
+                .build();
+
+        PersonInfoDTO personInfoDTO2 = PersonInfoDTO.builder()
+                .lastName("lastname2")
+                .address("person address 2")
+                .age(22)
+                .email("person2@mail.com")
+                .medications(List.of("dodoxadin:630mg"))
+                .allergies(List.of("shellfish"))
+                .build();
+
+        when(this.personRepository.getPersons()).thenReturn(List.of(person1, person2));
+
+        Exception exception = assertThrows(PersonNotFoundException.class, () -> this.personServiceImpl.getPersonInfo("firstname3", "lastname3"));
+
+        assertEquals("Nobody found with firstname firstname3 and lastname lastname3", exception.getMessage());
+
+        verify(this.personRepository, times(1)).getPersons();
+        verify(this.medicalRecordService, never()).findMedicalRecordByFirstNameAndLastName(anyString(), anyString());
+        verify(this.personMapper, never()).asPersonInfoDTO(any(Person.class), any(MedicalRecord.class));
+
+    }
+
 
     @DisplayName("Should get persons mail by city")
     @Test
