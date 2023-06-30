@@ -5,6 +5,7 @@ import com.openclassrooms.safetynet.dto.PersonWithAddressAndPhoneDTO;
 import com.openclassrooms.safetynet.dto.PersonsConcernedByFireStationDTO;
 import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.exception.MailsNotFoundException;
+import com.openclassrooms.safetynet.exception.PersonAlreadyExistException;
 import com.openclassrooms.safetynet.exception.PersonNotFoundException;
 import com.openclassrooms.safetynet.model.Person;
 import com.openclassrooms.safetynet.repository.PersonRepository;
@@ -25,7 +26,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -85,11 +87,11 @@ class PersonControllerTest {
 
         mockMvc.perform(get("/person/all"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$",hasSize(1)))
+                .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].firstName", is("firstname")))
                 .andExpect(jsonPath("$[0].lastName", is("lastname")));
 
-        verify(this.personService,times(1)).getAllPerson();
+        verify(this.personService, times(1)).getAllPerson();
 
     }
 
@@ -107,6 +109,26 @@ class PersonControllerTest {
 
         verify(this.personService, times(1)).addPerson(personCaptor.capture());
         Person personCaptorValue = personCaptor.getValue();
+        assertEquals("firstname", personCaptorValue.getFirstName());
+        assertEquals("lastname", personCaptorValue.getLastName());
+
+    }
+
+
+    @DisplayName("Should not add a person -> person already exist")
+    @Test
+    void shouldNotAddPerson() throws Exception {
+
+        when(this.personService.addPerson(any(Person.class))).thenThrow(PersonAlreadyExistException.class);
+
+        mockMvc.perform(post("/person")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(person)))
+                .andExpect(status().isConflict());
+
+        verify(this.personService, times(1)).addPerson(personCaptor.capture());
+        Person personCaptorValue = personCaptor.getValue();
+
         assertEquals("firstname", personCaptorValue.getFirstName());
         assertEquals("lastname", personCaptorValue.getLastName());
 

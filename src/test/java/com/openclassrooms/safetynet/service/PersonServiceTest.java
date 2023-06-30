@@ -184,7 +184,7 @@ class PersonServiceTest {
 
     @DisplayName("Should add a person")
     @Test
-    void addPerson() throws PersonAlreadyExistException {
+    void shouldAddPerson() throws PersonAlreadyExistException {
 
         when(this.personRepository.addPerson(any(Person.class))).thenReturn(person1);
 
@@ -194,6 +194,20 @@ class PersonServiceTest {
         assertEquals(person1, result);
 
         verify(this.personRepository, times(1)).addPerson(any(Person.class));
+
+    }
+
+
+    @DisplayName("Should not add a person -> person already exist")
+    @Test
+    void shouldNotAddPerson() throws PersonAlreadyExistException {
+
+        when(this.personRepository.findPersonByFirstNameAndLastName(anyString(), anyString())).thenReturn(person1);
+
+        assertThrows(PersonAlreadyExistException.class, () -> this.personServiceImpl.addPerson(person1));
+
+        verify(this.personRepository, times(1)).findPersonByFirstNameAndLastName(anyString(), anyString());
+        verify(this.personRepository, never()).addPerson(any(Person.class));
 
     }
 

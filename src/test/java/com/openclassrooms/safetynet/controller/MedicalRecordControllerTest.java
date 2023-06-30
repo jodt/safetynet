@@ -1,6 +1,7 @@
 package com.openclassrooms.safetynet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.openclassrooms.safetynet.exception.MedicalRecordAlreadyExistException;
 import com.openclassrooms.safetynet.exception.MedicalRecordNotFoundException;
 import com.openclassrooms.safetynet.model.MedicalRecord;
 import com.openclassrooms.safetynet.repository.MedicalRecordRepository;
@@ -75,11 +76,11 @@ class MedicalRecordControllerTest {
 
         mockMvc.perform(get("/medicalRecord/all"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$",hasSize(1)))
+                .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].firstName", is("firstname")))
                 .andExpect(jsonPath("$[0].lastName", is("lastname")));
 
-        verify(this.medicalRecordService,times(1)).getAllMedicalRecords();
+        verify(this.medicalRecordService, times(1)).getAllMedicalRecords();
 
     }
 
@@ -94,6 +95,25 @@ class MedicalRecordControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.firstName", is("firstname")))
                 .andExpect(jsonPath("$.lastName", is("lastname")));
+
+        verify(this.medicalRecordService, times(1)).addMedicalRecord(medicalCaptor.capture());
+        MedicalRecord medicalCaptorValue = medicalCaptor.getValue();
+        assertEquals("firstname", medicalCaptorValue.getFirstName());
+        assertEquals("lastname", medicalCaptorValue.getLastName());
+
+    }
+
+
+    @DisplayName("Should not add a medical record -> medical record already exist")
+    @Test
+    void shouldNotAddMedicalRecord() throws Exception {
+
+        when(this.medicalRecordService.addMedicalRecord(any(MedicalRecord.class))).thenThrow(MedicalRecordAlreadyExistException.class);
+
+        mockMvc.perform(post("/medicalRecord")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(medicalRecord)))
+                .andExpect(status().isConflict());
 
         verify(this.medicalRecordService, times(1)).addMedicalRecord(medicalCaptor.capture());
         MedicalRecord medicalCaptorValue = medicalCaptor.getValue();

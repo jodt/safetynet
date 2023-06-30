@@ -39,7 +39,7 @@ class MedicalRecordServiceTest {
         medicalRecord = MedicalRecord.builder()
                 .firstName("firstname")
                 .lastName("lastname")
-                .birthdate(LocalDate.of(2000,01,01))
+                .birthdate(LocalDate.of(2000, 01, 01))
                 .medications(List.of("aznol:350mg"))
                 .allergies(List.of("nillacilan"))
                 .build();
@@ -47,7 +47,7 @@ class MedicalRecordServiceTest {
         medicalRecordToUpdate = MedicalRecord.builder()
                 .firstName("firstname")
                 .lastName("lastname")
-                .birthdate(LocalDate.of(2000,01,01))
+                .birthdate(LocalDate.of(2000, 01, 01))
                 .medications(List.of("aznol:350mg"))
                 .allergies(List.of("nillacilan"))
                 .build();
@@ -55,7 +55,7 @@ class MedicalRecordServiceTest {
         updatedMedicalRecord = MedicalRecord.builder()
                 .firstName("firstname")
                 .lastName("lastname")
-                .birthdate(LocalDate.of(2000,01,01))
+                .birthdate(LocalDate.of(2000, 01, 01))
                 .medications(List.of("aznol:350mg"))
                 .allergies(List.of("peanut"))
                 .build();
@@ -75,7 +75,7 @@ class MedicalRecordServiceTest {
         assertEquals(1, result.size());
         assertEquals(medicalRecord, result.get(0));
 
-        verify(this.medicalRecordRepository,times(1)).getMedicalRecords();
+        verify(this.medicalRecordRepository, times(1)).getMedicalRecords();
 
     }
 
@@ -84,32 +84,46 @@ class MedicalRecordServiceTest {
     @Test
     void shouldAddAMedicalRecord() throws MedicalRecordAlreadyExistException {
 
-         when(this.medicalRecordRepository.addMedicalRecord(any(MedicalRecord.class))).thenReturn(medicalRecord);
+        when(this.medicalRecordRepository.addMedicalRecord(any(MedicalRecord.class))).thenReturn(medicalRecord);
 
-         MedicalRecord result = this.medicalRecordServiceImpl.addMedicalRecord(medicalRecord);
+        MedicalRecord result = this.medicalRecordServiceImpl.addMedicalRecord(medicalRecord);
 
-         assertNotNull(result);
+        assertNotNull(result);
 
-         assertEquals(medicalRecord,result);
+        assertEquals(medicalRecord, result);
 
-         verify(this.medicalRecordRepository, times(1)).addMedicalRecord(any(MedicalRecord.class));
+        verify(this.medicalRecordRepository, times(1)).addMedicalRecord(any(MedicalRecord.class));
 
     }
+
+    @DisplayName("Should not add a medical record -> medical record already exist")
+    @Test
+    void shouldNotAddAMedicalRecord() throws MedicalRecordAlreadyExistException {
+
+        when(this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(anyString(), anyString())).thenReturn(medicalRecord);
+
+        assertThrows(MedicalRecordAlreadyExistException.class, () -> this.medicalRecordServiceImpl.addMedicalRecord(medicalRecord));
+
+        verify(this.medicalRecordRepository, times(1)).findMedicalRecordByFirstNameAndLastName(anyString(), anyString());
+        verify(this.medicalRecordRepository, never()).addMedicalRecord(any(MedicalRecord.class));
+
+    }
+
 
     @DisplayName("Should update a medical record")
     @Test
     void updateMedicalRecord() throws MedicalRecordNotFoundException {
 
-        when(this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(anyString(),anyString())).thenReturn(medicalRecordToUpdate);
+        when(this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(anyString(), anyString())).thenReturn(medicalRecordToUpdate);
         when(this.medicalRecordRepository.updateMedicalRecord(any(MedicalRecord.class))).thenReturn(updatedMedicalRecord);
 
         MedicalRecord result = this.medicalRecordServiceImpl.updateMedicalRecord(updatedMedicalRecord);
 
         assertNotNull(result);
 
-        assertEquals(updatedMedicalRecord,result);
+        assertEquals(updatedMedicalRecord, result);
 
-        verify(this.medicalRecordRepository, times(1)).findMedicalRecordByFirstNameAndLastName(anyString(),anyString());
+        verify(this.medicalRecordRepository, times(1)).findMedicalRecordByFirstNameAndLastName(anyString(), anyString());
         verify(this.medicalRecordRepository, times(1)).updateMedicalRecord(any(MedicalRecord.class));
 
     }
@@ -119,12 +133,12 @@ class MedicalRecordServiceTest {
     @Test
     void shouldDeleteMedicalRecord() throws MedicalRecordNotFoundException {
 
-        when(this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(anyString(),anyString())).thenReturn(medicalRecord);
+        when(this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(anyString(), anyString())).thenReturn(medicalRecord);
         doNothing().when(medicalRecordRepository).deleteMedicalRecord(medicalRecord);
 
-        this.medicalRecordServiceImpl.deleteMedicalRecord("firstname","lastname");
+        this.medicalRecordServiceImpl.deleteMedicalRecord("firstname", "lastname");
 
-        verify(this.medicalRecordRepository,times(1)).deleteMedicalRecord(medicalRecord);
+        verify(this.medicalRecordRepository, times(1)).deleteMedicalRecord(medicalRecord);
 
     }
 
@@ -133,15 +147,15 @@ class MedicalRecordServiceTest {
     @Test
     void shouldFindMedicalRecordByFirstNameAndLastName() throws MedicalRecordNotFoundException {
 
-        when(this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(anyString(),anyString())).thenReturn(medicalRecord);
+        when(this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(anyString(), anyString())).thenReturn(medicalRecord);
 
-        MedicalRecord result = this.medicalRecordServiceImpl.findMedicalRecordByFirstNameAndLastName("firstname","lastname");
+        MedicalRecord result = this.medicalRecordServiceImpl.findMedicalRecordByFirstNameAndLastName("firstname", "lastname");
 
         assertNotNull(result);
 
-        assertEquals(medicalRecord,result);
+        assertEquals(medicalRecord, result);
 
-        verify(this.medicalRecordRepository, times(1)).findMedicalRecordByFirstNameAndLastName(anyString(),anyString());
+        verify(this.medicalRecordRepository, times(1)).findMedicalRecordByFirstNameAndLastName(anyString(), anyString());
 
     }
 
@@ -150,13 +164,13 @@ class MedicalRecordServiceTest {
     @Test
     void shouldNotFindMedicalRecordByFirstNameAndLastName() throws MedicalRecordNotFoundException {
 
-        when(this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(anyString(),anyString())).thenReturn(null);
+        when(this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(anyString(), anyString())).thenReturn(null);
 
-        Exception exception = assertThrows(MedicalRecordNotFoundException.class, () -> this.medicalRecordServiceImpl.findMedicalRecordByFirstNameAndLastName("firstname","lastname"));
+        Exception exception = assertThrows(MedicalRecordNotFoundException.class, () -> this.medicalRecordServiceImpl.findMedicalRecordByFirstNameAndLastName("firstname", "lastname"));
 
         assertEquals("Medical record not found for firstname lastname", exception.getMessage());
 
-        verify(this.medicalRecordRepository, times(1)).findMedicalRecordByFirstNameAndLastName(anyString(),anyString());
+        verify(this.medicalRecordRepository, times(1)).findMedicalRecordByFirstNameAndLastName(anyString(), anyString());
 
     }
 

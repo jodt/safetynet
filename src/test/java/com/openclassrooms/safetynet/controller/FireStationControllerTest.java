@@ -1,6 +1,7 @@
 package com.openclassrooms.safetynet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.openclassrooms.safetynet.exception.FireStationAlreadyExistException;
 import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.model.FireStation;
 import com.openclassrooms.safetynet.repository.FireStationRepository;
@@ -69,18 +70,18 @@ class FireStationControllerTest {
 
         mockMvc.perform(get("/firestation/all"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$",hasSize(1)))
+                .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].station", is(1)))
                 .andExpect(jsonPath("$[0].address", is("fire station address")));
 
-        verify(this.fireStationService,times(1)).getAllFireStation();
+        verify(this.fireStationService, times(1)).getAllFireStation();
 
     }
 
 
     @DisplayName("Should add a fire station")
     @Test
-    void ShouldAddFireStation() throws Exception {
+    void shouldAddFireStation() throws Exception {
 
         mockMvc.perform(post("/firestation")
                         .contentType("application/json")
@@ -97,9 +98,28 @@ class FireStationControllerTest {
     }
 
 
+    @DisplayName("Should not add a fire station -> fire station already exist")
+    @Test
+    void shouldNotAddFireStation() throws Exception {
+
+        when(this.fireStationService.addFireStation(any(FireStation.class))).thenThrow(FireStationAlreadyExistException.class);
+
+        mockMvc.perform(post("/firestation")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(fireStation)))
+                .andExpect(status().isConflict());
+
+        verify(this.fireStationService, times(1)).addFireStation(fireStationCaptor.capture());
+        FireStation fireStationCaptorValue = fireStationCaptor.getValue();
+        assertEquals(1, fireStationCaptorValue.getStation());
+        assertEquals("fire station address", fireStationCaptorValue.getAddress());
+
+    }
+
+
     @DisplayName("Should update a fire station")
     @Test
-    void ShouldUpdateFireStation() throws Exception {
+    void shouldUpdateFireStation() throws Exception {
 
         mockMvc.perform(put("/firestation")
                         .contentType("application/json")
@@ -118,7 +138,7 @@ class FireStationControllerTest {
 
     @DisplayName("Should not update a fire station -> fire station not found")
     @Test
-    void ShouldNotUpdateFireStation() throws Exception {
+    void shouldNotUpdateFireStation() throws Exception {
 
         when(this.fireStationService.updateStationNumber(any(FireStation.class))).thenThrow(FireStationNotFoundException.class);
 
@@ -134,7 +154,7 @@ class FireStationControllerTest {
 
     @DisplayName("Should delete a fire station by address")
     @Test
-    void deleteFireStationByAddress() throws Exception {
+    void shouldDeleteFireStationByAddress() throws Exception {
 
         mockMvc.perform(delete("/firestation")
                         .param("address", "fire station address"))
@@ -149,7 +169,7 @@ class FireStationControllerTest {
 
     @DisplayName("Should not delete a fire station by address-> fire station not found")
     @Test
-    void ShouldNotDeleteFireStationByAddress() throws Exception {
+    void shouldNotDeleteFireStationByAddress() throws Exception {
 
         doThrow(FireStationNotFoundException.class).when(this.fireStationService).deleteFireStationByAddress(anyString());
 
@@ -178,7 +198,7 @@ class FireStationControllerTest {
 
     @DisplayName("Should not delete fire station by number -> fire station not found")
     @Test
-    void ShouldNotDeleteFireStationByStationsNumber() throws Exception {
+    void shouldNotDeleteFireStationByStationsNumber() throws Exception {
 
         doThrow(FireStationNotFoundException.class).when(this.fireStationService).deleteFireStationsByStationNumber(anyInt());
 

@@ -4,7 +4,6 @@ import com.openclassrooms.safetynet.exception.FireStationAlreadyExistException;
 import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.model.FireStation;
 import com.openclassrooms.safetynet.repository.FireStationRepository;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,7 +61,7 @@ class FireStationServiceTest {
     @DisplayName("Should get all fire stations")
     public void shouldGetAllFireStation() {
 
-        when(this.fireStationRepository.getFireStations()).thenReturn(List.of(fireStation1,fireStation2));
+        when(this.fireStationRepository.getFireStations()).thenReturn(List.of(fireStation1, fireStation2));
 
         List<FireStation> result = this.fireStationServiceImpl.getAllFireStation();
 
@@ -89,6 +88,19 @@ class FireStationServiceTest {
         assertEquals("Test address", result.getAddress());
 
         verify(this.fireStationRepository, times(1)).addFireStation(any(FireStation.class));
+
+    }
+
+    @Test
+    @DisplayName("Should not add a fire station -> fire station already exist")
+    public void shouldNotAddFireStation() throws FireStationAlreadyExistException {
+
+        when(this.fireStationRepository.getFireStationByNumberAndAddress(any(FireStation.class))).thenReturn(fireStation1);
+
+        assertThrows(FireStationAlreadyExistException.class, () -> this.fireStationServiceImpl.addFireStation(fireStation1));
+
+        verify(this.fireStationRepository, times(1)).getFireStationByNumberAndAddress(any(FireStation.class));
+        verify(this.fireStationRepository, never()).addFireStation(any(FireStation.class));
 
     }
 

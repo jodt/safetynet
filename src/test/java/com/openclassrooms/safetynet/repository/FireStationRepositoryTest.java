@@ -172,4 +172,35 @@ class FireStationRepositoryTest {
 
     }
 
+
+    @DisplayName("Should get fire station by number and address")
+    @Test
+    void shouldGetFireStationByNumberAndAddress() {
+
+        FireStation fireStationToRetrieve = FireStation.builder()
+                .station(1)
+                .address("first address")
+                .build();
+
+        FireStation result = this.fireStationRepository.getFireStationByNumberAndAddress(fireStationToRetrieve);
+
+        assertNotNull(result);
+        assertEquals(fireStation1, result);
+    }
+
+
+    @DisplayName("Should not get fire station by number and address")
+    @Test
+    void shouldNotGetFireStationByNumberAndAddress() {
+
+        FireStation fireStationToRetrieve = FireStation.builder()
+                .station(5)
+                .address("fifth address")
+                .build();
+
+        FireStation result = this.fireStationRepository.getFireStationByNumberAndAddress(fireStationToRetrieve);
+
+        assertNull(result);
+    }
+
 }
