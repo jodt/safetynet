@@ -24,7 +24,7 @@ class FireStationServiceTest {
     @Mock
     private FireStationRepository fireStationRepository;
     @InjectMocks
-    private FireStationService fireStationService;
+    private FireStationServiceImpl fireStationServiceImpl;
 
     private FireStation fireStation1;
     private FireStation fireStation2;
@@ -63,7 +63,7 @@ class FireStationServiceTest {
 
         when(this.fireStationRepository.addFireStation(any(FireStation.class))).thenReturn(fireStation1);
 
-        FireStation result = this.fireStationService.addFireStation(fireStation1);
+        FireStation result = this.fireStationServiceImpl.addFireStation(fireStation1);
 
         assertNotNull(result);
         assertEquals(1, result.getStation());
@@ -81,7 +81,7 @@ class FireStationServiceTest {
         when(this.fireStationRepository.getFireStationByAddress(any(String.class))).thenReturn(fireStationToUpdate);
         when(this.fireStationRepository.updateStationNumber(any(FireStation.class))).thenReturn(updatedFireStation);
 
-        FireStation result = this.fireStationService.updateStationNumber(updatedFireStation);
+        FireStation result = this.fireStationServiceImpl.updateStationNumber(updatedFireStation);
 
         assertNotNull(result);
         assertEquals(2, result.getStation());
@@ -101,7 +101,7 @@ class FireStationServiceTest {
 
         when(this.fireStationRepository.getFireStationsByNumber(any(Integer.class))).thenReturn(fireStationsToDelete);
 
-        this.fireStationService.deleteFireStationsByStationNumber(any(Integer.class));
+        this.fireStationServiceImpl.deleteFireStationsByStationNumber(any(Integer.class));
 
         verify(this.fireStationRepository, times(1)).deleteStations(fireStationsToDelete);
 
@@ -120,7 +120,7 @@ class FireStationServiceTest {
         when(this.fireStationRepository.getFireStationByAddress(any(String.class))).thenReturn(fireStationToDelete);
         doNothing().when(fireStationRepository).deleteStation(fireStationToDelete);
 
-        this.fireStationService.deleteFireStationByAddress("Test address");
+        this.fireStationServiceImpl.deleteFireStationByAddress("Test address");
 
         verify(this.fireStationRepository, times(1)).deleteStation(fireStationToDelete);
 
@@ -137,7 +137,7 @@ class FireStationServiceTest {
 
         when(this.fireStationRepository.getFireStationsByNumber(any(Integer.class))).thenReturn(fireStationList);
 
-        List<FireStation> result = this.fireStationService.getFireStationByStationNumber(1);
+        List<FireStation> result = this.fireStationServiceImpl.getFireStationByStationNumber(1);
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -154,7 +154,7 @@ class FireStationServiceTest {
 
         when(this.fireStationRepository.getFireStationsByNumber(any(Integer.class))).thenReturn(List.of());
 
-        Exception exception = assertThrows(FireStationNotFoundException.class, () -> this.fireStationService.getFireStationByStationNumber(9));
+        Exception exception = assertThrows(FireStationNotFoundException.class, () -> this.fireStationServiceImpl.getFireStationByStationNumber(9));
 
         assertEquals("firestation not found with the station's number 9", exception.getMessage());
 
@@ -168,7 +168,7 @@ class FireStationServiceTest {
 
         when(this.fireStationRepository.getFireStationByAddress(any(String.class))).thenReturn(fireStation1);
 
-        FireStation result = this.fireStationService.getFireStationByAddress("Test address");
+        FireStation result = this.fireStationServiceImpl.getFireStationByAddress("Test address");
 
         assertNotNull(result);
         assertEquals("Test address", result.getAddress());
@@ -184,7 +184,7 @@ class FireStationServiceTest {
 
         when(this.fireStationRepository.getFireStationByAddress(any(String.class))).thenReturn(null);
 
-        Exception exception = assertThrows(FireStationNotFoundException.class, () -> this.fireStationService.getFireStationByAddress("test address"));
+        Exception exception = assertThrows(FireStationNotFoundException.class, () -> this.fireStationServiceImpl.getFireStationByAddress("test address"));
 
         assertEquals("firestation not found with the address test address", exception.getMessage());
 

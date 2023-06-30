@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.AbstractSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,7 +25,7 @@ class MedicalRecordServiceTest {
     MedicalRecordRepository medicalRecordRepository;
 
     @InjectMocks
-    MedicalRecordService medicalRecordService;
+    MedicalRecordServiceImpl medicalRecordServiceImpl;
 
     private MedicalRecord medicalRecord;
     private MedicalRecord medicalRecordToUpdate;
@@ -69,7 +68,7 @@ class MedicalRecordServiceTest {
 
          when(this.medicalRecordRepository.addMedicalRecord(any(MedicalRecord.class))).thenReturn(medicalRecord);
 
-         MedicalRecord result = this.medicalRecordService.addMedicalRecord(medicalRecord);
+         MedicalRecord result = this.medicalRecordServiceImpl.addMedicalRecord(medicalRecord);
 
          assertNotNull(result);
 
@@ -86,7 +85,7 @@ class MedicalRecordServiceTest {
         when(this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(anyString(),anyString())).thenReturn(medicalRecordToUpdate);
         when(this.medicalRecordRepository.updateMedicalRecord(any(MedicalRecord.class))).thenReturn(updatedMedicalRecord);
 
-        MedicalRecord result = this.medicalRecordService.updateMedicalRecord(updatedMedicalRecord);
+        MedicalRecord result = this.medicalRecordServiceImpl.updateMedicalRecord(updatedMedicalRecord);
 
         assertNotNull(result);
 
@@ -105,7 +104,7 @@ class MedicalRecordServiceTest {
         when(this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(anyString(),anyString())).thenReturn(medicalRecord);
         doNothing().when(medicalRecordRepository).deleteMedicalRecord(medicalRecord);
 
-        this.medicalRecordService.deleteMedicalRecord("firstname","lastname");
+        this.medicalRecordServiceImpl.deleteMedicalRecord("firstname","lastname");
 
         verify(this.medicalRecordRepository,times(1)).deleteMedicalRecord(medicalRecord);
 
@@ -118,7 +117,7 @@ class MedicalRecordServiceTest {
 
         when(this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(anyString(),anyString())).thenReturn(medicalRecord);
 
-        MedicalRecord result = this.medicalRecordService.findMedicalRecordByFirstNameAndLastName("firstname","lastname");
+        MedicalRecord result = this.medicalRecordServiceImpl.findMedicalRecordByFirstNameAndLastName("firstname","lastname");
 
         assertNotNull(result);
 
@@ -135,7 +134,7 @@ class MedicalRecordServiceTest {
 
         when(this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(anyString(),anyString())).thenReturn(null);
 
-        Exception exception = assertThrows(MedicalRecordNotFoundException.class, () -> this.medicalRecordService.findMedicalRecordByFirstNameAndLastName("firstname","lastname"));
+        Exception exception = assertThrows(MedicalRecordNotFoundException.class, () -> this.medicalRecordServiceImpl.findMedicalRecordByFirstNameAndLastName("firstname","lastname"));
 
         assertEquals("Medical record not found for firstname lastname", exception.getMessage());
 

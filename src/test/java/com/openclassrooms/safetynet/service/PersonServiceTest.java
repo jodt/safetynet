@@ -39,7 +39,7 @@ class PersonServiceTest {
     PersonMapper personMapper;
 
     @InjectMocks
-    PersonService personService;
+    PersonServiceImpl personServiceImpl;
 
     private Person person1;
     private Person person2;
@@ -163,13 +163,35 @@ class PersonServiceTest {
     }
 
 
+    @DisplayName("Should get all people")
+    @Test
+    void shouldGetAllPerson(){
+
+        List<Person> personList = List.of(person1,person2,person3,child);
+
+        when(this.personRepository.getPersons()).thenReturn(personList);
+
+        List<Person> result = this.personServiceImpl.getAllPerson();
+
+        assertNotNull(result);
+        assertEquals(4, result.size());
+        assertEquals(person1, result.get(0));
+        assertEquals(person2, result.get(1));
+        assertEquals(person3,result.get(2));
+        assertEquals(child, result.get(3));
+
+        verify(this.personRepository,times(1)).getPersons();
+
+    }
+
+
     @DisplayName("Should add a person")
     @Test
     void addPerson() {
 
         when(this.personRepository.addPerson(any(Person.class))).thenReturn(person1);
 
-        Person result = this.personService.addPerson(person1);
+        Person result = this.personServiceImpl.addPerson(person1);
 
         assertNotNull(result);
         assertEquals(person1, result);
@@ -186,7 +208,7 @@ class PersonServiceTest {
         when(this.personRepository.findPersonByFirstNameAndLastName(anyString(), anyString())).thenReturn(personToUpdate);
         when(this.personRepository.updatePerson(any(Person.class))).thenReturn(updatedPerson);
 
-        Person result = this.personService.updatePerson(updatedPerson);
+        Person result = this.personServiceImpl.updatePerson(updatedPerson);
 
         assertNotNull(result);
         assertEquals(updatedPerson, result);
@@ -204,7 +226,7 @@ class PersonServiceTest {
         when(this.personRepository.findPersonByFirstNameAndLastName(anyString(), anyString())).thenReturn(person1);
         doNothing().when(this.personRepository).deletePerson(person1);
 
-        this.personService.deletePerson("firstname", "lastname");
+        this.personServiceImpl.deletePerson("firstname", "lastname");
 
         verify(this.personRepository, times(1)).deletePerson(any(Person.class));
 
@@ -237,7 +259,7 @@ class PersonServiceTest {
         when(this.personMapper.asPersonWithAddressAndPhoneDTO(person1, medicalRecord1)).thenReturn(person1DTO);
         when(this.personMapper.asPersonWithAddressAndPhoneDTO(child, childMedicalRecord)).thenReturn(childDTO);
 
-        PersonsConcernedByFireStationDTO result = this.personService.findPeopleConcernedByFireStation(1);
+        PersonsConcernedByFireStationDTO result = this.personServiceImpl.findPeopleConcernedByFireStation(1);
 
         assertNotNull(result);
         assertEquals(2, result.getPersonWithAddressAndPhoneDTOList().size());
@@ -287,7 +309,7 @@ class PersonServiceTest {
         when(this.personMapper.asPersonWithAgeDTO(childMedicalRecord)).thenReturn(childDTO);
 
 
-        List<PersonWithAgeAndFamilyMembersDTO> result = this.personService.findChildrenByAddress("person address 1");
+        List<PersonWithAgeAndFamilyMembersDTO> result = this.personServiceImpl.findChildrenByAddress("person address 1");
 
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -311,7 +333,7 @@ class PersonServiceTest {
         when(this.fireStationService.getFireStationByStationNumber(any(Integer.class))).thenReturn(List.of(fireStation));
         when(this.personRepository.getPersons()).thenReturn(List.of(person1, person2, child));
 
-        List<String> result = this.personService.findPhoneNumberByFireStationNumber(1);
+        List<String> result = this.personServiceImpl.findPhoneNumberByFireStationNumber(1);
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -348,7 +370,7 @@ class PersonServiceTest {
         when(this.personMapper.asPersonWithMedicalRecordDTO(person3, medicalRecord3)).thenReturn(person3DTO);
         when(this.fireStationService.getFireStationByAddress(anyString())).thenReturn(fireStation);
 
-        FireDTO result = this.personService.findAllPeopleInFireCase("person address 1");
+        FireDTO result = this.personServiceImpl.findAllPeopleInFireCase("person address 1");
 
         assertNotNull(result);
         assertEquals(2, result.getPersonsListInFireCase().size());
@@ -393,7 +415,7 @@ class PersonServiceTest {
         when(this.personMapper.asPersonWithMedicalRecordDTO(person1, medicalRecord1)).thenReturn(person1DTO);
         when(this.personMapper.asPersonWithMedicalRecordDTO(person2, medicalRecord2)).thenReturn(person2DTO);
 
-        Map<String, List<PersonWithMedicalRecordDTO>> result = personService.findAllPeopleInFloodCase(stationNumberList);
+        Map<String, List<PersonWithMedicalRecordDTO>> result = personServiceImpl.findAllPeopleInFloodCase(stationNumberList);
 
 
         assertNotNull(result);
@@ -410,6 +432,21 @@ class PersonServiceTest {
         verify(this.personMapper, times(2)).asPersonWithMedicalRecordDTO(any(Person.class), any(MedicalRecord.class));
 
     }
+
+    @DisplayName("should get people grouped by addresses -> person not found")
+    @Test
+    void shouldNotFindAllPeopleInFloodCase() throws FireStationNotFoundException, PersonNotFoundException, MedicalRecordNotFoundException {
+        List<Integer> stationNumberList = List.of(1, 2);
+
+        when(this.fireStationService.getFireStationByStationNumber(1)).thenReturn(List.of());
+        when(this.fireStationService.getFireStationByStationNumber(2)).thenReturn(List.of());
+
+        assertThrows(PersonNotFoundException.class,() -> personServiceImpl.findAllPeopleInFloodCase(stationNumberList));
+
+        verify(this.fireStationService,times(2)).getFireStationByStationNumber(anyInt());
+
+    }
+
 
     @Test
     void ShouldGetPersonInfo() throws MedicalRecordNotFoundException {
@@ -436,7 +473,7 @@ class PersonServiceTest {
         when(this.medicalRecordService.findMedicalRecordByFirstNameAndLastName("firstname2", "lastname2")).thenReturn(medicalRecord2);
         when(this.personMapper.asPersonInfoDTO(any(Person.class), any(MedicalRecord.class))).thenReturn(personInfoDTO2);
 
-        List<PersonInfoDTO> result = this.personService.getPersonInfo("firstname2", "lastname2");
+        List<PersonInfoDTO> result = this.personServiceImpl.getPersonInfo("firstname2", "lastname2");
 
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -449,7 +486,7 @@ class PersonServiceTest {
 
         when(this.personRepository.getPersons()).thenReturn(List.of(person1, person2));
 
-        List<String> result = this.personService.getMailsByCity("city");
+        List<String> result = this.personServiceImpl.getMailsByCity("city");
 
         assertFalse(result.isEmpty());
         assertEquals(2, result.size());
@@ -467,7 +504,7 @@ class PersonServiceTest {
 
         when(this.personRepository.getPersons()).thenReturn(List.of());
 
-        Exception exception = assertThrows(MailsNotFoundException.class, () -> this.personService.getMailsByCity("city"));
+        Exception exception = assertThrows(MailsNotFoundException.class, () -> this.personServiceImpl.getMailsByCity("city"));
 
         assertEquals("No email found for people living in city", exception.getMessage());
 
