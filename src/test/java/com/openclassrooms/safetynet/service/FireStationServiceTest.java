@@ -58,6 +58,24 @@ class FireStationServiceTest {
 
 
     @Test
+    @DisplayName("Should get all fire stations")
+    public void shouldGetAllFireStation() {
+
+        when(this.fireStationRepository.getFireStations()).thenReturn(List.of(fireStation1,fireStation2));
+
+        List<FireStation> result = this.fireStationServiceImpl.getAllFireStation();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(fireStation1, result.get(0));
+        assertEquals(fireStation2, result.get(1));
+
+        verify(this.fireStationRepository, times(1)).getFireStations();
+
+    }
+
+
+    @Test
     @DisplayName("Should add a fire station")
     public void shouldAddFireStation() {
 
