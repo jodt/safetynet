@@ -77,6 +77,23 @@ class PersonControllerTest {
     }
 
 
+    @DisplayName("Should get all people")
+    @Test
+    void shouldGetPersons() throws Exception {
+
+        when(this.personService.getAllPerson()).thenReturn(List.of(person));
+
+        mockMvc.perform(get("/person/all"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(1)))
+                .andExpect(jsonPath("$[0].firstName", is("firstname")))
+                .andExpect(jsonPath("$[0].lastName", is("lastname")));
+
+        verify(this.personService,times(1)).getAllPerson();
+
+    }
+
+
     @DisplayName("Should add a person")
     @Test
     void shouldAddPerson() throws Exception {
@@ -111,6 +128,7 @@ class PersonControllerTest {
         Person personCaptorValue = personCaptor.getValue();
         assertEquals("firstname", personCaptorValue.getFirstName());
         assertEquals("lastname", personCaptorValue.getLastName());
+
     }
 
 
@@ -128,6 +146,7 @@ class PersonControllerTest {
         verify(this.personService, times(1)).updatePerson(any(Person.class));
 
     }
+
 
     @DisplayName("Should not update a person -> server error")
     @Test
@@ -163,6 +182,7 @@ class PersonControllerTest {
         assertEquals("lastname", lastNameCaptorValue);
 
     }
+
 
     @DisplayName("Should not delete a person -> person not found")
     @Test
