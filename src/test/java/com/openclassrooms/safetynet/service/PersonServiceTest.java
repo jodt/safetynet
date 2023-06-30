@@ -218,6 +218,21 @@ class PersonServiceTest {
 
     }
 
+    @DisplayName("Should not update a person -> person not found")
+    @Test
+    void shouldNotUpdatePerson() throws PersonNotFoundException {
+
+        when(this.personRepository.findPersonByFirstNameAndLastName(anyString(),anyString())).thenReturn(null);
+
+        Exception exception = assertThrows(PersonNotFoundException.class, () -> this.personServiceImpl.updatePerson(updatedPerson));
+
+        assertEquals("Person not found with firstname firstname and lastname lastname", exception.getMessage());
+
+        verify(this.personRepository, times(1)).findPersonByFirstNameAndLastName(anyString(), anyString());
+        verify(this.personRepository, never()).updatePerson(any(Person.class));
+
+    }
+
 
     @DisplayName("Should delete a person")
     @Test
@@ -344,6 +359,7 @@ class PersonServiceTest {
         verify(this.personRepository, times(1)).getPersons();
     }
 
+    @DisplayName("Should get people list and number of the station in Fire Case")
     @Test
     void findAllPeopleInFireCase() throws MedicalRecordNotFoundException, FireStationNotFoundException, PersonNotFoundException {
 
@@ -382,6 +398,24 @@ class PersonServiceTest {
         verify(this.medicalRecordService, times(2)).findMedicalRecordByFirstNameAndLastName(anyString(), anyString());
         verify(this.personMapper, times(2)).asPersonWithMedicalRecordDTO(any(Person.class), any(MedicalRecord.class));
         verify(this.fireStationService, times(1)).getFireStationByAddress(anyString());
+
+    }
+
+    @DisplayName("Should not get people list and number of the station in Fire Case -> persons not found")
+    @Test
+    void shouldNotFindAllPeopleInFireCase() throws MedicalRecordNotFoundException, FireStationNotFoundException, PersonNotFoundException {
+
+
+        when(this.personRepository.findPersonsByAddress(anyString())).thenReturn(List.of());
+
+        Exception exception = assertThrows(PersonNotFoundException.class,() -> this.personServiceImpl.findAllPeopleInFireCase("person address 1"));
+
+        assertEquals("nobody found at person address 1", exception.getMessage());
+
+        verify(this.personRepository, times(1)).findPersonsByAddress(anyString());
+        verify(this.medicalRecordService, never()).findMedicalRecordByFirstNameAndLastName(anyString(), anyString());
+        verify(this.personMapper, never()).asPersonWithMedicalRecordDTO(any(Person.class), any(MedicalRecord.class));
+        verify(this.fireStationService, never()).getFireStationByAddress(anyString());
 
     }
 
@@ -433,13 +467,14 @@ class PersonServiceTest {
 
     }
 
+
     @DisplayName("should get people grouped by addresses -> person not found")
     @Test
-    void shouldNotFindAllPeopleInFloodCase() throws FireStationNotFoundException, PersonNotFoundException, MedicalRecordNotFoundException {
+    void shouldNotFindAllPeopleInFloodCase() throws FireStationNotFoundException {
         List<Integer> stationNumberList = List.of(1, 2);
 
-        when(this.fireStationService.getFireStationByStationNumber(1)).thenReturn(List.of());
-        when(this.fireStationService.getFireStationByStationNumber(2)).thenReturn(List.of());
+        when(this.fireStationService.getFireStationByStationNumber(1)).thenThrow(FireStationNotFoundException.class);
+        when(this.fireStationService.getFireStationByStationNumber(2)).thenThrow(FireStationNotFoundException.class);
 
         assertThrows(PersonNotFoundException.class,() -> personServiceImpl.findAllPeopleInFloodCase(stationNumberList));
 
