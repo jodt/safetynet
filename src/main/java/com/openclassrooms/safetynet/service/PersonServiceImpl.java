@@ -137,7 +137,7 @@ public class PersonServiceImpl implements PersonService {
         List<String> addresses = getAddressesByStationNumber(number);
 
         if (addresses.isEmpty()){
-            throw new FireStationNotFoundException("Fire station not found with the number " + number);
+            throw new FireStationNotFoundException("Fire stations not found with the number " + number);
         } else {
             logger.debug("Try to retrieve the telephone numbers of the people concerned by the fire station number {}", number);
             List<String> phoneNumber = this.personRepository.getPersons().stream()
