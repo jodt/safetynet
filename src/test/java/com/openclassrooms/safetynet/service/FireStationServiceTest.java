@@ -187,7 +187,7 @@ class FireStationServiceTest {
 
         Exception exception = assertThrows(FireStationNotFoundException.class, () -> this.fireStationServiceImpl.getFireStationByStationNumber(9));
 
-        assertEquals("firestation not found with the station's number 9", exception.getMessage());
+        assertEquals("fire stations not found with the station's number 9", exception.getMessage());
 
     }
 
