@@ -23,7 +23,7 @@ public class PersonController {
     private final PersonService personService;
 
 
-    public PersonController(PersonRepository personRepository, PersonService personService) {
+    public PersonController(PersonService personService) {
         this.personService = personService;
     }
 
