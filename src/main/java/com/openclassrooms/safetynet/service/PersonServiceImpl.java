@@ -35,6 +35,10 @@ public class PersonServiceImpl implements PersonService {
         this.personMapper = personMapper;
     }
 
+    /**
+     * Get all people
+     * @return a list of person
+     */
     public List<Person> getAllPerson() {
         return this.personRepository.getPersons();
     }
@@ -53,6 +57,14 @@ public class PersonServiceImpl implements PersonService {
 
     }
 
+    /**
+     * Update a person
+     *
+     * @param person
+     * @return the updated person
+     *
+     * @throws PersonNotFoundException if the person is not found
+     */
     public Person updatePerson(Person person) throws PersonNotFoundException {
         logger.debug("Try to update the person {} {}", person.getFirstName(), person.getLastName());
         Person personToUpdate = this.findPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName());
@@ -66,25 +78,44 @@ public class PersonServiceImpl implements PersonService {
         return person;
     }
 
-    public void deletePerson(String firstName, String lastName) throws Exception {
+    /**
+     * Delete a person
+     *
+     * @param firstName
+     * @param lastName
+     *
+     * @throws PersonNotFoundException if the person is not found
+     */
+    public void deletePerson(String firstName, String lastName) throws PersonNotFoundException {
         logger.debug("Try to delete the person {} {}", firstName, lastName);
         Person personFound = this.findPersonByFirstNameAndLastName(firstName, lastName);
         logger.debug("Person successfully deleted");
         this.personRepository.deletePerson(personFound);
     }
 
+
+    /**
+     * Method that takes the station number and returns people covered by the fire station
+     *
+     * @param number
+     *
+     * @return an object with a list of people with the following information(firstname,lastname,address, phone and
+     * age), and the number of children and adults.
+     *
+     * @throws FireStationNotFoundException if the fire station is not found
+     */
     public PersonsConcernedByFireStationDTO findPeopleConcernedByFireStation(int number) throws FireStationNotFoundException {
         AtomicInteger adults = new AtomicInteger(0);
         AtomicInteger children = new AtomicInteger(0);
 
 
         List<String> addresses = this.fireStationService.getFireStationByStationNumber(number).stream()
-                .map(fireStation -> fireStation.getAddress())//retrieve addresses of fire Stations
+                .map(fireStation -> fireStation.getAddress()) //retrieve addresses covered by the fire station
                 .collect(Collectors.toList());
 
         List<PersonWithAddressAndPhoneDTO> personWithAddressAndPhoneDTOList = this.personRepository.getPersons().stream()
                 .filter(person -> addresses.stream()
-                        .anyMatch(address -> person.getAddress().equals(address)))
+                        .anyMatch(address -> person.getAddress().equals(address))) //check if the address matches a person's address for each person
                 .map(person -> createPersonWithAddressAndPhoneDTO(person))
                 .collect(Collectors.toList());
 
@@ -99,6 +130,17 @@ public class PersonServiceImpl implements PersonService {
         return new PersonsConcernedByFireStationDTO(personWithAddressAndPhoneDTOList, children, adults);
     }
 
+    /**
+     * Method that takes an address and return a list of children with the following
+     * information ( firstname, lastname, age and other family members)
+     *
+     * @param address
+     *
+     * @return a list of children
+     *
+     * @throws MedicalRecordNotFoundException if medical record is not found
+     * @throws PersonNotFoundException if person is not found
+     */
     public List<PersonWithAgeAndFamilyMembersDTO> findChildrenByAddress(String address) throws MedicalRecordNotFoundException, PersonNotFoundException {
 
         List<MedicalRecord> medicalRecordList = new ArrayList<>();
@@ -129,13 +171,24 @@ public class PersonServiceImpl implements PersonService {
                         )
                 );
             } else {
-                logger.debug("No children found at {}", address);
+                logger.error("No children found at {}", address);
+                throw new PersonNotFoundException("No children found at the address " + address);
             }
         }
         return childrenList;
     }
 
 
+    /**
+     * Method that takes the fire station number and return
+     * a list of telephone numbers of people covered by the fire station
+     *
+     * @param number
+     *
+     * @return a list of telephone numbers
+     *
+     * @throws FireStationNotFoundException
+     */
     public List<String> findPhoneNumberByFireStationNumber(int number) throws FireStationNotFoundException {
 
         List<String> addresses = getAddressesByStationNumber(number);
@@ -157,6 +210,18 @@ public class PersonServiceImpl implements PersonService {
     }
 
 
+    /**
+     * Method that takes an address and return an object with a list of people with
+     * the following information (lastname, phone, age, medications and allergies), and
+     * the number of the fire station for this address.
+     *
+     * @param address
+     *
+     * @return a list of person and the number of the fire station
+     *
+     * @throws PersonNotFoundException
+     * @throws FireStationNotFoundException
+     */
     public FireDTO findAllPeopleInFireCase(String address) throws PersonNotFoundException, FireStationNotFoundException {
         logger.debug("Try to find People living at {} in fire case", address);
         List<PersonWithMedicalRecordDTO> personsList = this.findPersonByAddress(address).stream()
@@ -168,6 +233,16 @@ public class PersonServiceImpl implements PersonService {
         return new FireDTO(personsList, firesStationNumber);
     }
 
+    /**
+     * Method that takes a list of fire station number and returns a list of people with
+     * the following information(lastname, phone, age, medications and allergies) sorted by address
+     *
+     * @param fireStationsNumber a list of fire station number
+     *
+     * @return a list of people sorted by address
+     *
+     * @throws PersonNotFoundException if person is not found
+     */
     public Map<String, List<PersonWithMedicalRecordDTO>> findAllPeopleInFloodCase(List<Integer> fireStationsNumber) throws PersonNotFoundException {
 
         Map<String, List<PersonWithMedicalRecordDTO>> personsListInFloodCaseDTO = new HashMap<>();
@@ -192,6 +267,18 @@ public class PersonServiceImpl implements PersonService {
         return personsListInFloodCaseDTO;
     }
 
+    /**
+     * Method that takes a firstname and a lastname and return a person with the following
+     * information (lastname, address,age,email,medications,allergies)
+     *
+     * @param firstName
+     *
+     * @param lastName
+     *
+     * @return a person
+     *
+     * @throws PersonNotFoundException if person not found
+     */
     public List<PersonInfoDTO> getPersonInfo(String firstName, String lastName) throws PersonNotFoundException {
         logger.debug("try to find person with firstname {} and lastname {}",firstName,lastName);
         List<PersonInfoDTO> personInfoDTOList;
@@ -210,6 +297,15 @@ public class PersonServiceImpl implements PersonService {
     }
 
 
+    /**
+     * Method that takes a city and returns a list of email addresses of everyone in the city
+     *
+     * @param city
+     *
+     * @return a list of email addresses
+     *
+     * @throws MailsNotFoundException if mail not found
+     */
     public List<String> getMailsByCity(String city) throws MailsNotFoundException {
         logger.debug("try to collect all people's mail of the city: {}", city);
         List<String> mails = this.personRepository.getPersons()
@@ -228,6 +324,13 @@ public class PersonServiceImpl implements PersonService {
     }
 
 
+    /**
+     * Method that takes firstname and lastname and return a person
+     * @param firstName
+     * @param lastName
+     * @return a person with this firstname and this lastname
+     * @throws PersonNotFoundException if person is not found
+     */
     private Person findPersonByFirstNameAndLastName(String firstName, String lastName) throws PersonNotFoundException {
         logger.debug("Try to find person with firstname {} and lastname {}", firstName, lastName);
         Person personFound = this.personRepository.findPersonByFirstNameAndLastName(firstName, lastName);
@@ -240,6 +343,15 @@ public class PersonServiceImpl implements PersonService {
     }
 
 
+    /**
+     * Method that takes an address and returns a list of people living at that address
+     *
+     * @param address
+     *
+     * @return a list of person
+     *
+     * @throws PersonNotFoundException if no one was found
+     */
     private List<Person> findPersonByAddress(String address) throws PersonNotFoundException {
         logger.debug("Try to find people at {}", address);
         List<Person> personsFound = this.personRepository.findPersonsByAddress(address);
@@ -251,6 +363,14 @@ public class PersonServiceImpl implements PersonService {
         return personsFound;
     }
 
+    /**
+     * Method that takes a fire station number and return a list of addresses
+     * corresponding to this fire station
+     *
+     * @param number
+     *
+     * @return a list of addresses
+     */
     private List<String> getAddressesByStationNumber(int number) {
         List<String> addresses;
         try {
@@ -264,6 +384,14 @@ public class PersonServiceImpl implements PersonService {
         return addresses;
     }
 
+    /**
+     * Method that takes a person, retrieves the person's medical record, and creates
+     * a DTO which is a person with the following information (lastname,phone,age,medications,allergies)
+     *
+     * @param person
+     *
+     * @return a PersonWithMedicalRecordDTO
+     */
     private PersonWithMedicalRecordDTO createPersonWithMedicalRecordDTO(Person person) {
         MedicalRecord medicalRecord;
         try {
@@ -275,6 +403,15 @@ public class PersonServiceImpl implements PersonService {
         }
     }
 
+
+    /**
+     * Method that takes a person, retrieves the person's medical record, and creates
+     * a DTO which is a person with the following information (firstname,lastname,address,phone,age )
+     *
+     * @param person
+     *
+     * @return a PersonWithAddressAndPhoneDTO
+     */
     private PersonWithAddressAndPhoneDTO createPersonWithAddressAndPhoneDTO(Person person) {
         MedicalRecord medicalRecord;
         try {
@@ -286,6 +423,15 @@ public class PersonServiceImpl implements PersonService {
         }
     }
 
+
+    /**
+     * Method that takes a person, retrieves the person's medical record, and creates
+     * a DTO which is a person with the following information (lastname,address,age,email,medications,allergies)
+     *
+     * @param person
+     *
+     * @return a PersonInfoDTO
+     */
     private PersonInfoDTO createPersonInfoDTO(Person person) {
         MedicalRecord medicalRecord;
         try {
@@ -297,6 +443,13 @@ public class PersonServiceImpl implements PersonService {
         }
     }
 
+    /**
+     * Method that takes a person and checks if they are already registered
+     *
+     * @param person
+     *
+     * @return true if the person is already registered otherwise false
+     */
     private Boolean checkIfPersonAlreadyExist (Person person) {
         return this.personRepository.findPersonByFirstNameAndLastName(person.getFirstName(),person.getLastName()) != null;
     }

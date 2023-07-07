@@ -17,6 +17,11 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * This class is used to read the json file at application startup,
+ * retrieve the data and load it into the people list,
+ * fire stations list and medical records list
+ */
 @Data
 @Component
 public class DataLoader implements CommandLineRunner {

@@ -5,6 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Class represent a person
+ * @author Joel DUMORTIER
+ */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

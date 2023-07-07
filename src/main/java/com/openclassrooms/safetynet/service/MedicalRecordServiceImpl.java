@@ -24,6 +24,10 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         this.medicalRecordRepository = medicalRecordRepository;
     }
 
+    /**
+     * Get all medical records
+     * @return a list of medical records
+     */
     public List<MedicalRecord> getAllMedicalRecords() {
         return this.medicalRecordRepository.getMedicalRecords();
     }
@@ -42,6 +46,12 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     }
 
 
+    /**
+     * Method that takes a medical record and update the corresponding medical record (by name and firstname)
+     * @param medicalRecord
+     * @return the updated medical record
+     * @throws MedicalRecordNotFoundException if medical record is not found
+     */
     public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
         logger.debug("Try to update the medical record of {} {}", medicalRecord.getFirstName(), medicalRecord.getLastName());
         MedicalRecord medicalRecordToUpdate = this.findMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName());
@@ -55,6 +65,12 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         return medicalRecord;
     }
 
+    /**
+     * Method that takes a firstname and a lastname and deletes the corresponding medical record
+     * @param firstName
+     * @param lastName
+     * @throws MedicalRecordNotFoundException if the medical record is not found
+     */
     public void deleteMedicalRecord(String firstName, String lastName) throws MedicalRecordNotFoundException {
         logger.debug("Try to delete the medical record of {} {}", firstName, lastName);
         MedicalRecord medicalRecordFound = this.findMedicalRecordByFirstNameAndLastName(firstName, lastName);
@@ -62,6 +78,13 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         this.medicalRecordRepository.deleteMedicalRecord(medicalRecordFound);
     }
 
+    /**
+     * Method that takes a firstname and a lstname and returns the corresponding medical record
+     * @param firstName
+     * @param lastName
+     * @return a medical record
+     * @throws MedicalRecordNotFoundException if medical record is not found
+     */
     public MedicalRecord findMedicalRecordByFirstNameAndLastName(String firstName, String lastName) throws MedicalRecordNotFoundException {
         logger.debug("Try to find the medical record of {} {}", firstName, lastName);
         MedicalRecord medicalRecordFound = this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(firstName, lastName);
@@ -73,6 +96,14 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
         return medicalRecordFound;
     }
 
+
+    /**
+     * Method that takes a medical record and checks if it is already registered
+     *
+     * @param medicalRecord
+     *
+     * @return true if the medical record is already registered otherwise false
+     */
     private Boolean checkIfMedicalRecordAlreadyExist (MedicalRecord medicalRecord) {
         return this.medicalRecordRepository.findMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(),medicalRecord.getLastName()) != null;
     }

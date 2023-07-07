@@ -22,6 +22,10 @@ public class FireStationServiceImpl implements FireStationService {
         this.fireStationRepository = fireStationRepository;
     }
 
+    /**
+     * Get all fire stations
+     * @return a list of fire stations
+     */
     public List<FireStation> getAllFireStation() {
         return this.fireStationRepository.getFireStations();
     }
@@ -39,6 +43,12 @@ public class FireStationServiceImpl implements FireStationService {
         }
     }
 
+    /**
+     * Method that takes a fire station and update the station n
+     * @param fireStation
+     * @return
+     * @throws FireStationNotFoundException if the fire station is not found
+     */
     public FireStation updateStationNumber(FireStation fireStation) throws FireStationNotFoundException {
         logger.debug("Try to update the fire station's number for the address {}", fireStation.getAddress());
         FireStation fireStationToUpdate = this.getFireStationByAddress(fireStation.getAddress());
@@ -50,6 +60,11 @@ public class FireStationServiceImpl implements FireStationService {
         return fireStation;
     }
 
+    /**
+     * Delete a fire station by station number
+     * @param stationNumber
+     * @throws FireStationNotFoundException if fire station is not found
+     */
     public void deleteFireStationsByStationNumber(int stationNumber) throws FireStationNotFoundException {
         logger.debug("Try to delete the fire stations with the station's number {}", stationNumber);
         List<FireStation> fireStationToDelete = this.getFireStationByStationNumber(stationNumber);
@@ -57,6 +72,11 @@ public class FireStationServiceImpl implements FireStationService {
         this.fireStationRepository.deleteStations(fireStationToDelete);
     }
 
+    /**
+     * Delete a fire station by address
+     * @param address
+     * @throws FireStationNotFoundException if fire station is not found
+     */
     public void deleteFireStationByAddress(String address) throws FireStationNotFoundException {
         logger.debug("Try to delete the fire station for the address {}", address);
         FireStation fireStationToDelete = this.getFireStationByAddress(address);
@@ -64,6 +84,12 @@ public class FireStationServiceImpl implements FireStationService {
         this.fireStationRepository.deleteStation(fireStationToDelete);
     }
 
+    /**
+     * Method that takes an address and return the fire station corresponding to this address
+     * @param stationAddress
+     * @return a fire station
+     * @throws FireStationNotFoundException
+     */
     public FireStation getFireStationByAddress(String stationAddress) throws FireStationNotFoundException {
         logger.debug("Try to find fire station for the address {}", stationAddress);
         FireStation fireStationResult = this.fireStationRepository.getFireStationByAddress(stationAddress);
@@ -75,17 +101,30 @@ public class FireStationServiceImpl implements FireStationService {
         return fireStationResult;
     }
 
+    /**
+     * Method that takes a fire station number and return all the fire stations corresponding to this number
+     * @param stationNumber
+     * @return a list fo fire stations
+     * @throws FireStationNotFoundException if fire stations not found
+     */
     public List<FireStation> getFireStationByStationNumber(int stationNumber) throws FireStationNotFoundException {
         logger.debug("Try to find fire stations with the station's number {}", stationNumber);
         List<FireStation> fireStationResult = this.fireStationRepository.getFireStationsByNumber(stationNumber);
         if (fireStationResult.isEmpty()) {
             logger.error("Fire stations not found with the station's number {}", stationNumber);
-            throw new FireStationNotFoundException("firestation not found with the station's number " + stationNumber);
+            throw new FireStationNotFoundException("fire stations not found with the station's number " + stationNumber);
         }
         logger.debug("Fire stations found with the station's number {}", stationNumber);
         return fireStationResult;
     }
 
+    /**
+     * Method that takes a fire station and checks if it exists
+     *
+     * @param fireStation
+     *
+     * @return true if the fire station is already registered otherwise false
+     */
     private Boolean checkIfFireStationAlreadyExist (FireStation fireStation) {
         return this.fireStationRepository.getFireStationByNumberAndAddress(fireStation) != null;
     }

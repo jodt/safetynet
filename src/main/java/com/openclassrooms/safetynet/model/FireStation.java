@@ -5,6 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Class represent a fire station
+ * @author Joel DUMORTIER
+ */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

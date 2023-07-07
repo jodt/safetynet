@@ -13,6 +13,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Class represent a medical record
+ * @author Joel DUMORTIER
+ */
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
