@@ -2,7 +2,6 @@ package com.openclassrooms.safetynet.service;
 
 import com.openclassrooms.safetynet.dto.*;
 import com.openclassrooms.safetynet.exception.*;
-import com.openclassrooms.safetynet.model.FireStation;
 import com.openclassrooms.safetynet.model.MedicalRecord;
 import com.openclassrooms.safetynet.model.Person;
 import com.openclassrooms.safetynet.repository.PersonRepository;
