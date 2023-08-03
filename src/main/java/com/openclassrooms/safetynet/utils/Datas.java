@@ -13,7 +13,6 @@ import java.util.List;
  * This class is used to deserialize the json data from the file
  */
 @Data
-@Component
 public class Datas {
 
     private List<Person> persons;
