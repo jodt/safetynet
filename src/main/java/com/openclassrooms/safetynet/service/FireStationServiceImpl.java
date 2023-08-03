@@ -44,7 +44,7 @@ public class FireStationServiceImpl implements FireStationService {
     }
 
     /**
-     * Method that takes a fire station and update the station n
+     * Method that takes a fire station and update the station number
      * @param fireStation
      * @return
      * @throws FireStationNotFoundException if the fire station is not found
