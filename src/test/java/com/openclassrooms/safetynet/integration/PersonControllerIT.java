@@ -2,21 +2,22 @@ package com.openclassrooms.safetynet.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openclassrooms.safetynet.model.Person;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.openclassrooms.safetynet.repository.PersonRepository;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PersonControllerIT {
 
     @Autowired
@@ -24,10 +25,14 @@ public class PersonControllerIT {
     @Autowired
     ObjectMapper objectMapper;
 
+    @Autowired
+    PersonRepository personRepository;
+
     private Person person;
 
+
     @BeforeEach
-    public void init(){
+    public void init() {
         person = Person.builder()
                 .firstName("firstname1")
                 .lastName("lastname1")
@@ -39,18 +44,22 @@ public class PersonControllerIT {
                 .build();
     }
 
+
     @DisplayName("Should get all people")
     @Test
+    @Order(1)
     void shouldGetPersons() throws Exception {
 
         mockMvc.perform(get("/person/all"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(23)));
+                .andExpect(jsonPath("$", hasSize(this.personRepository.getPersons().size())));
 
     }
 
+
     @DisplayName("Should add a person")
     @Test
+    @Order(2)
     void shouldAddPerson() throws Exception {
 
         mockMvc.perform(post("/person")
@@ -58,10 +67,16 @@ public class PersonControllerIT {
                         .contentType("application/json"))
                 .andExpect(status().isCreated()).andReturn();
 
+        Person personAdded = this.personRepository.findPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName());
+
+        assertEquals(person, personAdded);
+
     }
+
 
     @DisplayName("Should update a person")
     @Test
+    @Order(3)
     void shouldUpdatePerson() throws Exception {
 
         Person updatedPerson = person = Person.builder()
@@ -79,16 +94,24 @@ public class PersonControllerIT {
                         .contentType("application/json"))
                 .andExpect(status().isOk());
 
+        String updatedAddress = this.personRepository.findPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName()).getAddress();
+
+        assertEquals("person address updated", updatedAddress);
+
     }
+
 
     @DisplayName("Should delete a person")
     @Test
+    @Order(4)
     void shouldDeletePerson() throws Exception {
 
         mockMvc.perform(delete("/person")
-                        .param("firstName",person.getFirstName())
+                        .param("firstName", person.getFirstName())
                         .param("lastName", person.getLastName()))
                 .andExpect(status().isNoContent());
+
+        assertFalse(this.personRepository.getPersons().contains(person));
 
     }
 
