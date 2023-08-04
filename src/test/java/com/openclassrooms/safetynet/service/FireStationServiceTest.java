@@ -221,4 +221,21 @@ class FireStationServiceTest {
 
     }
 
+
+    @Test
+    @DisplayName("Should get addresses by fire station number")
+    public void getAddressesByStationNumber() {
+
+        when(this.fireStationRepository.getFireStationsByNumber(anyInt())).thenReturn(List.of(fireStation1));
+
+        List<String> result = this.fireStationServiceImpl.getAddressesByStationNumber(1);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Test address", result.get(0));
+
+        verify(fireStationRepository,times(1)).getFireStationsByNumber(anyInt());
+
+    }
+
 }

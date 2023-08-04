@@ -356,7 +356,7 @@ class PersonServiceTest {
                 .address("person address 1")
                 .build();
 
-        when(this.fireStationService.getFireStationByStationNumber(any(Integer.class))).thenReturn(List.of(fireStation));
+        when(this.fireStationService.getAddressesByStationNumber(any(Integer.class))).thenReturn(List.of("person address 1"));
         when(this.personRepository.getPersons()).thenReturn(List.of(person1, person2, child));
 
         List<String> result = this.personServiceImpl.findPhoneNumberByFireStationNumber(1);
@@ -366,7 +366,7 @@ class PersonServiceTest {
         assertEquals("001-001-001", result.get(0));
         assertEquals("001-001-003", result.get(1));
 
-        verify(this.fireStationService, times(1)).getFireStationByStationNumber(any(Integer.class));
+        verify(this.fireStationService, times(1)).getAddressesByStationNumber(any(Integer.class));
         verify(this.personRepository, times(1)).getPersons();
     }
 
@@ -380,13 +380,13 @@ class PersonServiceTest {
                 .address("person address 1")
                 .build();
 
-        when(this.fireStationService.getFireStationByStationNumber(any(Integer.class))).thenThrow(FireStationNotFoundException.class);
+        when(this.fireStationService.getAddressesByStationNumber(any(Integer.class))).thenReturn(List.of());
 
         Exception exception = assertThrows(FireStationNotFoundException.class, () -> this.personServiceImpl.findPhoneNumberByFireStationNumber(1));
 
         assertEquals("Fire stations not found with the number 1", exception.getMessage());
 
-        verify(this.fireStationService, times(1)).getFireStationByStationNumber(any(Integer.class));
+        verify(this.fireStationService, times(1)).getAddressesByStationNumber(any(Integer.class));
         verify(this.personRepository, never()).getPersons();
     }
 
@@ -473,8 +473,8 @@ class PersonServiceTest {
                 .allergies(List.of("aznolm"))
                 .build();
 
-        when(this.fireStationService.getFireStationByStationNumber(1)).thenReturn(List.of(fireStation));
-        when(this.fireStationService.getFireStationByStationNumber(2)).thenReturn(List.of(fireStation2));
+        when(this.fireStationService.getAddressesByStationNumber(1)).thenReturn(List.of("person address 1"));
+        when(this.fireStationService.getAddressesByStationNumber(2)).thenReturn(List.of("person address 2"));
         when(this.personRepository.findPersonsByAddress("person address 1")).thenReturn(List.of(person1));
         when(this.personRepository.findPersonsByAddress("person address 2")).thenReturn(List.of(person2));
         when(this.medicalRecordService.findMedicalRecordByFirstNameAndLastName(person1.getFirstName(), person1.getLastName())).thenReturn(medicalRecord1);
@@ -493,7 +493,7 @@ class PersonServiceTest {
         assertEquals(person1DTO, result.get("person address 1").get(0));
         assertEquals(person2DTO, result.get("person address 2").get(0));
 
-        verify(this.fireStationService, times(2)).getFireStationByStationNumber(anyInt());
+        verify(this.fireStationService, times(2)).getAddressesByStationNumber(anyInt());
         verify(this.personRepository, times(2)).findPersonsByAddress(anyString());
         verify(this.medicalRecordService, times(2)).findMedicalRecordByFirstNameAndLastName(anyString(), anyString());
         verify(this.personMapper, times(2)).asPersonWithMedicalRecordDTO(any(Person.class), any(MedicalRecord.class));
@@ -506,12 +506,12 @@ class PersonServiceTest {
     void shouldNotFindAllPeopleInFloodCase() throws FireStationNotFoundException {
         List<Integer> stationNumberList = List.of(1, 2);
 
-        when(this.fireStationService.getFireStationByStationNumber(1)).thenThrow(FireStationNotFoundException.class);
-        when(this.fireStationService.getFireStationByStationNumber(2)).thenThrow(FireStationNotFoundException.class);
+        when(this.fireStationService.getAddressesByStationNumber(1)).thenReturn(List.of());
+        when(this.fireStationService.getAddressesByStationNumber(2)).thenReturn(List.of());
 
         assertThrows(PersonNotFoundException.class, () -> personServiceImpl.findAllPeopleInFloodCase(stationNumberList));
 
-        verify(this.fireStationService, times(2)).getFireStationByStationNumber(anyInt());
+        verify(this.fireStationService, times(2)).getAddressesByStationNumber(anyInt());
 
     }
 

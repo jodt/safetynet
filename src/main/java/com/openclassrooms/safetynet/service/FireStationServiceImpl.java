@@ -3,7 +3,6 @@ package com.openclassrooms.safetynet.service;
 import com.openclassrooms.safetynet.exception.FireStationAlreadyExistException;
 import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
 import com.openclassrooms.safetynet.model.FireStation;
-import com.openclassrooms.safetynet.model.MedicalRecord;
 import com.openclassrooms.safetynet.repository.FireStationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class FireStationServiceImpl implements FireStationService {
@@ -117,6 +117,21 @@ public class FireStationServiceImpl implements FireStationService {
         logger.debug("Fire stations found with the station's number {}", stationNumber);
         return fireStationResult;
     }
+
+    /**
+     * Method that takes a fire station number and return a list of addresses
+     * corresponding to this fire station
+     *
+     * @param number
+     *
+     * @return a list of addresses
+     */
+    public List<String> getAddressesByStationNumber(int number) {
+        return this.fireStationRepository.getFireStationsByNumber(number).stream()
+                    .map(fireStation -> fireStation.getAddress())//retrieve addresses of fire Stations
+                    .collect(Collectors.toList());
+    }
+
 
     /**
      * Method that takes a fire station and checks if it exists

@@ -21,4 +21,6 @@ public interface FireStationService {
     public FireStation getFireStationByAddress(String stationAddress) throws FireStationNotFoundException;
 
     public List<FireStation> getFireStationByStationNumber(int stationNumber) throws FireStationNotFoundException;
+
+    public List<String> getAddressesByStationNumber(int number);
 }

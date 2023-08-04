@@ -190,9 +190,10 @@ public class PersonServiceImpl implements PersonService {
      */
     public List<String> findPhoneNumberByFireStationNumber(int number) throws FireStationNotFoundException {
 
-        List<String> addresses = getAddressesByStationNumber(number);
+        List<String> addresses = this.fireStationService.getAddressesByStationNumber(number);
 
         if (addresses.isEmpty()){
+            logger.error("Fire stations not found with the number " + number);
             throw new FireStationNotFoundException("Fire stations not found with the number " + number);
         } else {
             logger.debug("Try to retrieve the telephone numbers of the people concerned by the fire station number {}", number);
@@ -246,7 +247,7 @@ public class PersonServiceImpl implements PersonService {
 
         Map<String, List<PersonWithMedicalRecordDTO>> personsListInFloodCaseDTO = new HashMap<>();
         List<String> addresses = fireStationsNumber.stream()
-                .map(station -> getAddressesByStationNumber(station))
+                .map(station -> this.fireStationService.getAddressesByStationNumber(station))
                 .flatMap(addressList -> addressList.stream())
                 .collect(Collectors.toList());
 
@@ -261,6 +262,7 @@ public class PersonServiceImpl implements PersonService {
 
         }
         if (personsListInFloodCaseDTO.isEmpty()) {
+            logger.error("Person not found");
             throw new PersonNotFoundException("Person not found");
         }
         return personsListInFloodCaseDTO;
@@ -360,27 +362,6 @@ public class PersonServiceImpl implements PersonService {
         }
         logger.debug("People found at {}", address);
         return personsFound;
-    }
-
-    /**
-     * Method that takes a fire station number and return a list of addresses
-     * corresponding to this fire station
-     *
-     * @param number
-     *
-     * @return a list of addresses
-     */
-    private List<String> getAddressesByStationNumber(int number) {
-        List<String> addresses;
-        try {
-            addresses = this.fireStationService.getFireStationByStationNumber(number).stream()
-                    .map(fireStation -> fireStation.getAddress())//retrieve addresses of fire Stations
-                    .collect(Collectors.toList());
-            return addresses;
-        } catch (FireStationNotFoundException e) {
-            addresses = new ArrayList<>();
-        }
-        return addresses;
     }
 
     /**
