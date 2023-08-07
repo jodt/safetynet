@@ -3,9 +3,6 @@ package com.openclassrooms.safetynet.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.openclassrooms.safetynet.dto.PersonsConcernedByFireStationDTO;
-import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
-import com.openclassrooms.safetynet.exception.MailsNotFoundException;
 import com.openclassrooms.safetynet.exception.PersonAlreadyExistException;
 import com.openclassrooms.safetynet.exception.PersonNotFoundException;
 import com.openclassrooms.safetynet.model.Person;
@@ -66,24 +63,6 @@ public class PersonController {
         this.personService.deletePerson(firstName, lastName);
         logger.info("Process end successfully");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-
-    @GetMapping("/communityEmail")
-    public List<String> getCommunityEmail(@RequestParam String city) throws MailsNotFoundException, JsonProcessingException {
-        logger.info("GET /communityEmail called to collect all people's emails for the city {}", city);
-        List<String> response = this.personService.getMailsByCity(city);
-        logger.info("Process end successfully with response: {}", mapper.writeValueAsString(response));
-        return response;
-    }
-
-
-    @GetMapping("/firestation")
-    public PersonsConcernedByFireStationDTO getPeopleConcernedByFiresStation(@RequestParam int stationNumber) throws FireStationNotFoundException, JsonProcessingException {
-        logger.info("GET /firestation called to get people concerned by the fire station number {} ", stationNumber);
-        PersonsConcernedByFireStationDTO personsConcernedByFireStation = this.personService.findPeopleConcernedByFireStation(stationNumber);
-        logger.info("Process end successfully with response: {}", mapper.writeValueAsString(personsConcernedByFireStation));
-        return personsConcernedByFireStation;
     }
 
 

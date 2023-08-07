@@ -1,8 +1,8 @@
 package com.openclassrooms.safetynet.controller;
 
-import com.openclassrooms.safetynet.dto.FireDTO;
-import com.openclassrooms.safetynet.dto.PersonInfoDTO;
-import com.openclassrooms.safetynet.dto.PersonWithMedicalRecordDTO;
+import com.openclassrooms.safetynet.dto.*;
+import com.openclassrooms.safetynet.exception.FireStationNotFoundException;
+import com.openclassrooms.safetynet.exception.MailsNotFoundException;
 import com.openclassrooms.safetynet.service.PersonService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -47,6 +48,12 @@ class VariousControllerTest {
     @Captor
     ArgumentCaptor<String> lastNameCaptor;
 
+    @Captor
+    ArgumentCaptor<Integer> stationNumberCaptor;
+
+    @Captor
+    ArgumentCaptor<String> cityCaptor;
+
     PersonWithMedicalRecordDTO firstPersonDTO;
 
     PersonWithMedicalRecordDTO secondPersonDTO;
@@ -69,6 +76,106 @@ class VariousControllerTest {
                 .allergies(List.of("apple"))
                 .build();
     }
+
+    @DisplayName("Should get list of person concerned by a fire station with adult and children number")
+    @Test
+    void shouldGetPeopleConcernedByFiresStation() throws Exception {
+
+        List<PersonWithAddressAndPhoneDTO> personList = List.of(
+                PersonWithAddressAndPhoneDTO.builder()
+                        .firstName("firstname1")
+                        .lastName("lastName1")
+                        .address("person address 1")
+                        .phone("001-001-001")
+                        .age(23)
+                        .build(),
+                PersonWithAddressAndPhoneDTO.builder()
+                        .firstName("firstname2")
+                        .lastName("lastName2")
+                        .address("person address 2")
+                        .phone("001-001-002")
+                        .age(5)
+                        .build()
+        );
+
+        AtomicInteger adults = new AtomicInteger(1);
+        AtomicInteger children = new AtomicInteger(1);
+
+        PersonsConcernedByFireStationDTO personsConcernedByFireStationDTO = PersonsConcernedByFireStationDTO.builder()
+                .personWithAddressAndPhoneDTOList(personList)
+                .adults(adults)
+                .children(children)
+                .build();
+
+        when(this.personService.findPeopleConcernedByFireStation(anyInt())).thenReturn(personsConcernedByFireStationDTO);
+
+        mockMvc.perform(get("/firestation")
+                        .param("stationNumber", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.personWithAddressAndPhoneDTOList", hasSize(2)))
+                .andExpect(jsonPath("$.personWithAddressAndPhoneDTOList[0].firstName", is("firstname1")))
+                .andExpect(jsonPath("$.personWithAddressAndPhoneDTOList[1].firstName", is("firstname2")))
+                .andExpect(jsonPath("$.adults", is(1)))
+                .andExpect(jsonPath("$.children", is(1)));
+
+        verify(this.personService, times(1)).findPeopleConcernedByFireStation(stationNumberCaptor.capture());
+        int stationNumberCaptorValue = stationNumberCaptor.getValue();
+        assertEquals(1, stationNumberCaptorValue);
+
+    }
+
+
+    @DisplayName("Should get list of person concerned by a fire station -> FireStationNotFoundException")
+    @Test
+    void shouldNotGetPeopleConcernedByFiresStation() throws Exception {
+
+        when(this.personService.findPeopleConcernedByFireStation(anyInt())).thenThrow(FireStationNotFoundException.class);
+
+        mockMvc.perform(get("/firestation")
+                        .param("stationNumber", "1"))
+                .andExpect(status().isNotFound());
+
+        verify(this.personService, times(1)).findPeopleConcernedByFireStation(anyInt());
+
+    }
+
+
+    @DisplayName("Should get a list of email")
+    @Test
+    void shouldGetCommunityEmail() throws Exception {
+
+        List<String> mailList = List.of("firstmail@mail.com", "secondmail@mail.com");
+
+        when(this.personService.getMailsByCity(anyString())).thenReturn(mailList);
+
+        mockMvc.perform(get("/communityEmail")
+                        .param("city", "city"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0]", is("firstmail@mail.com")))
+                .andExpect(jsonPath("$[1]", is("secondmail@mail.com")));
+
+        verify(this.personService, times(1)).getMailsByCity(cityCaptor.capture());
+        String cityCaptorValue = cityCaptor.getValue();
+        assertEquals("city", cityCaptorValue);
+
+    }
+
+
+    @DisplayName("Should not get a list of email -> EmailNotFoundException")
+    @Test
+    void shouldNotGetCommunityEmail() throws Exception {
+
+        when(this.personService.getMailsByCity(anyString())).thenThrow(MailsNotFoundException.class);
+
+        mockMvc.perform(get("/communityEmail")
+                        .param("city", "city"))
+                .andExpect(status().isNotFound());
+
+        verify(this.personService, times(1)).getMailsByCity(anyString());
+
+    }
+
 
     @DisplayName("Should get people list and the number of the fire station in Fire case")
     @Test
