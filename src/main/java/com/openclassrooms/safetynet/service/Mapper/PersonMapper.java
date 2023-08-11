@@ -9,11 +9,11 @@ import com.openclassrooms.safetynet.model.Person;
 
 public interface PersonMapper {
 
-    PersonWithAgeAndFamilyMembersDTO asPersonWithAgeDTO (MedicalRecord medicalRecord);
+    PersonWithAgeAndFamilyMembersDTO asPersonWithAgeDTO(MedicalRecord medicalRecord);
 
-    PersonWithAddressAndPhoneDTO asPersonWithAddressAndPhoneDTO (Person person,MedicalRecord medicalRecord);
+    PersonWithAddressAndPhoneDTO asPersonWithAddressAndPhoneDTO(Person person, MedicalRecord medicalRecord);
 
-    PersonWithMedicalRecordDTO asPersonWithMedicalRecordDTO (Person person, MedicalRecord medicalRecord);
+    PersonWithMedicalRecordDTO asPersonWithMedicalRecordDTO(Person person, MedicalRecord medicalRecord);
 
     PersonInfoDTO asPersonInfoDTO(Person person, MedicalRecord medicalRecord);
 

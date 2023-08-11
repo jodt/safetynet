@@ -38,6 +38,7 @@ public class AlertController {
         return childrenListResult;
     }
 
+
     @GetMapping("/phoneAlert")
     public List<String> getPeoplePhoneNumberByFIreStationNumber(@RequestParam(name = "firestation") int station) throws FireStationNotFoundException, JsonProcessingException {
         logger.info("GET /phoneAlert to collect the telephone number of the people concerned by fire station number {}", station);
@@ -45,4 +46,6 @@ public class AlertController {
         logger.info("Process end successfully with response: {}", mapper.writeValueAsString(phoneNumberList));
         return phoneNumberList;
     }
+
+
 }

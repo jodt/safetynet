@@ -20,6 +20,7 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, HttpStatus.NOT_FOUND);
     }
 
+
     @ExceptionHandler(value = {MailsNotFoundException.class})
     public ResponseEntity<Object> handleMailsNotFoundException(MailsNotFoundException e) {
         ApiException apiException = new ApiException(
@@ -29,6 +30,7 @@ public class ApiExceptionHandler {
         );
         return new ResponseEntity<>(apiException, HttpStatus.NOT_FOUND);
     }
+
 
     @ExceptionHandler(value = {FireStationNotFoundException.class})
     public ResponseEntity<Object> handleFireStationNotFoundException(FireStationNotFoundException e) {
@@ -40,6 +42,7 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, HttpStatus.NOT_FOUND);
     }
 
+
     @ExceptionHandler(value = {MedicalRecordNotFoundException.class})
     public ResponseEntity<Object> handleMedicalNotFoundException(MedicalRecordNotFoundException e) {
         ApiException apiException = new ApiException(
@@ -49,6 +52,7 @@ public class ApiExceptionHandler {
         );
         return new ResponseEntity<>(apiException, HttpStatus.NOT_FOUND);
     }
+
 
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<Object> handleException(Exception e) {
@@ -60,6 +64,7 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+
     @ExceptionHandler(value = {PersonAlreadyExistException.class})
     public ResponseEntity<Object> handlePersonAlreadyExistException(PersonAlreadyExistException e) {
         ApiException apiException = new ApiException(
@@ -70,6 +75,7 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, HttpStatus.CONFLICT);
     }
 
+
     @ExceptionHandler(value = {MedicalRecordAlreadyExistException.class})
     public ResponseEntity<Object> handleMedicalRecordAlreadyExistException(MedicalRecordAlreadyExistException e) {
         ApiException apiException = new ApiException(
@@ -79,6 +85,7 @@ public class ApiExceptionHandler {
         );
         return new ResponseEntity<>(apiException, HttpStatus.CONFLICT);
     }
+
 
     @ExceptionHandler(value = {FireStationAlreadyExistException.class})
     public ResponseEntity<Object> handleFireStationAlreadyExistException(FireStationAlreadyExistException e) {

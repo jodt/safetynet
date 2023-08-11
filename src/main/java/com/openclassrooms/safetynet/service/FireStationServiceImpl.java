@@ -22,8 +22,10 @@ public class FireStationServiceImpl implements FireStationService {
         this.fireStationRepository = fireStationRepository;
     }
 
+
     /**
      * Get all fire stations
+     *
      * @return a list of fire stations
      */
     public List<FireStation> getAllFireStation() {
@@ -32,8 +34,8 @@ public class FireStationServiceImpl implements FireStationService {
 
     public FireStation addFireStation(FireStation fireStation) throws FireStationAlreadyExistException {
         Boolean isFireStationAlreadyRegistered = this.checkIfFireStationAlreadyExist(fireStation);
-        if(isFireStationAlreadyRegistered){
-            logger.error("Fire station with the number {} and the address {} is already registered", fireStation.getStation(),fireStation.getAddress());
+        if (isFireStationAlreadyRegistered) {
+            logger.error("Fire station with the number {} and the address {} is already registered", fireStation.getStation(), fireStation.getAddress());
             throw new FireStationAlreadyExistException("Fire station with the number " + fireStation.getStation() + " and the address " + fireStation.getAddress() + " is already registered");
         } else {
             logger.debug("Try to add a new fire station");
@@ -43,8 +45,10 @@ public class FireStationServiceImpl implements FireStationService {
         }
     }
 
+
     /**
      * Method that takes a fire station and update the station number
+     *
      * @param fireStation
      * @return
      * @throws FireStationNotFoundException if the fire station is not found
@@ -60,8 +64,10 @@ public class FireStationServiceImpl implements FireStationService {
         return fireStation;
     }
 
+
     /**
      * Delete a fire station by station number
+     *
      * @param stationNumber
      * @throws FireStationNotFoundException if fire station is not found
      */
@@ -72,8 +78,10 @@ public class FireStationServiceImpl implements FireStationService {
         this.fireStationRepository.deleteStations(fireStationToDelete);
     }
 
+
     /**
      * Delete a fire station by address
+     *
      * @param address
      * @throws FireStationNotFoundException if fire station is not found
      */
@@ -84,8 +92,10 @@ public class FireStationServiceImpl implements FireStationService {
         this.fireStationRepository.deleteStation(fireStationToDelete);
     }
 
+
     /**
      * Method that takes an address and return the fire station corresponding to this address
+     *
      * @param stationAddress
      * @return a fire station
      * @throws FireStationNotFoundException
@@ -101,8 +111,10 @@ public class FireStationServiceImpl implements FireStationService {
         return fireStationResult;
     }
 
+
     /**
      * Method that takes a fire station number and return all the fire stations corresponding to this number
+     *
      * @param stationNumber
      * @return a list fo fire stations
      * @throws FireStationNotFoundException if fire stations not found
@@ -118,18 +130,18 @@ public class FireStationServiceImpl implements FireStationService {
         return fireStationResult;
     }
 
+
     /**
      * Method that takes a fire station number and return a list of addresses
      * corresponding to this fire station
      *
      * @param number
-     *
      * @return a list of addresses
      */
     public List<String> getAddressesByStationNumber(int number) {
         return this.fireStationRepository.getFireStationsByNumber(number).stream()
-                    .map(fireStation -> fireStation.getAddress())//retrieve addresses of fire Stations
-                    .collect(Collectors.toList());
+                .map(fireStation -> fireStation.getAddress())//retrieve addresses of fire Stations
+                .collect(Collectors.toList());
     }
 
 
@@ -137,10 +149,11 @@ public class FireStationServiceImpl implements FireStationService {
      * Method that takes a fire station and checks if it exists
      *
      * @param fireStation
-     *
      * @return true if the fire station is already registered otherwise false
      */
-    private Boolean checkIfFireStationAlreadyExist (FireStation fireStation) {
+    private Boolean checkIfFireStationAlreadyExist(FireStation fireStation) {
         return this.fireStationRepository.getFireStationByNumberAndAddress(fireStation) != null;
     }
+
+
 }

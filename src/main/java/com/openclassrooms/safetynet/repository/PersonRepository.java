@@ -15,9 +15,11 @@ public class PersonRepository {
         return this.persons;
     }
 
+
     public void setPersons(List<Person> persons) {
         this.persons = persons;
     }
+
 
     public Person findPersonByFirstNameAndLastName(String firstName, String lastName) {
         Person personResult = null;
@@ -29,6 +31,7 @@ public class PersonRepository {
         return personResult;
     }
 
+
     public List<Person> findPersonsByAddress(String address) {
         List<Person> personList = new ArrayList<>();
         for (Person person : this.persons) {
@@ -39,19 +42,23 @@ public class PersonRepository {
         return personList;
     }
 
+
     public Person addPerson(Person person) {
         this.persons.add(person);
         return person;
     }
 
+
     public void deletePerson(Person person) {
         this.persons.remove(person);
     }
+
 
     public Person updatePerson(Person updatedPerson) {
         int index = this.persons.indexOf(this.findPersonByFirstNameAndLastName(updatedPerson.getFirstName(), updatedPerson.getLastName()));
         this.persons.set(index, updatedPerson);
         return updatedPerson;
     }
+
 
 }

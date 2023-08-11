@@ -24,6 +24,7 @@ public class FireStationRepository {
         return fireStation;
     }
 
+
     public List<FireStation> getFireStationsByNumber(int stationNumber) {
         List<FireStation> fireStationsResult = new ArrayList<>();
         for (FireStation fireStation : this.firestations) {
@@ -33,6 +34,7 @@ public class FireStationRepository {
         }
         return fireStationsResult;
     }
+
 
     public FireStation getFireStationByAddress(String stationAddress) {
         FireStation fireStationResult = null;
@@ -44,9 +46,11 @@ public class FireStationRepository {
         return fireStationResult;
     }
 
+
     public void deleteStation(FireStation fireStation) {
         this.firestations.remove(fireStation);
     }
+
 
     public void deleteStations(List<FireStation> fireStations) {
         for (FireStation firestation : fireStations) {
@@ -54,20 +58,23 @@ public class FireStationRepository {
         }
     }
 
+
     public FireStation updateStationNumber(FireStation updatedFireStation) {
         int index = this.firestations.indexOf(this.getFireStationByAddress(updatedFireStation.getAddress()));
         this.firestations.set(index, updatedFireStation);
         return updatedFireStation;
     }
 
-    public FireStation getFireStationByNumberAndAddress(FireStation fireStationToRetrieve){
+
+    public FireStation getFireStationByNumberAndAddress(FireStation fireStationToRetrieve) {
         FireStation result = null;
-        for (FireStation fireStation : this.firestations){
-            if(fireStation.getStation() == fireStationToRetrieve.getStation() && fireStation.getAddress().toLowerCase().equals(fireStationToRetrieve.getAddress().toLowerCase())){
+        for (FireStation fireStation : this.firestations) {
+            if (fireStation.getStation() == fireStationToRetrieve.getStation() && fireStation.getAddress().toLowerCase().equals(fireStationToRetrieve.getAddress().toLowerCase())) {
                 result = fireStation;
             }
         }
         return result;
     }
+
 
 }

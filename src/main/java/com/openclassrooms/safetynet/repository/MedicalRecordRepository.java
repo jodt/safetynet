@@ -24,15 +24,18 @@ public class MedicalRecordRepository {
         return medicalRecord;
     }
 
+
     public void deleteMedicalRecord(MedicalRecord medicalRecord) {
         this.medicalRecords.remove(medicalRecord);
     }
+
 
     public MedicalRecord updateMedicalRecord(MedicalRecord updatedMedicalRecord) {
         int index = this.medicalRecords.indexOf(this.findMedicalRecordByFirstNameAndLastName(updatedMedicalRecord.getFirstName(), updatedMedicalRecord.getLastName()));
         this.medicalRecords.set(index, updatedMedicalRecord);
         return updatedMedicalRecord;
     }
+
 
     public MedicalRecord findMedicalRecordByFirstNameAndLastName(String firstName, String lastName) {
         MedicalRecord medicalRecordResult = null;
@@ -43,5 +46,6 @@ public class MedicalRecordRepository {
         }
         return medicalRecordResult;
     }
+
 
 }

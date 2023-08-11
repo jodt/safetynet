@@ -88,7 +88,7 @@ class PersonRepositoryTest {
         assertNotNull(result);
         assertEquals(1, result.size());
 
-        assertEquals(person1,result.get(0));
+        assertEquals(person1, result.get(0));
     }
 
 
@@ -111,8 +111,8 @@ class PersonRepositoryTest {
         assertNotNull(result);
         assertEquals(3, this.personList.size());
 
-        assertEquals(personToAdd,result);
-        assertEquals(personToAdd,this.personList.get(2));
+        assertEquals(personToAdd, result);
+        assertEquals(personToAdd, this.personList.get(2));
 
     }
 

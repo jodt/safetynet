@@ -234,7 +234,7 @@ class FireStationServiceTest {
         assertEquals(1, result.size());
         assertEquals("Test address", result.get(0));
 
-        verify(fireStationRepository,times(1)).getFireStationsByNumber(anyInt());
+        verify(fireStationRepository, times(1)).getFireStationsByNumber(anyInt());
 
     }
 

@@ -15,6 +15,7 @@ import java.util.List;
 
 /**
  * Class represent a medical record
+ *
  * @author Joel DUMORTIER
  */
 @Builder
@@ -25,7 +26,7 @@ public class MedicalRecord {
 
     private String firstName;
     private String lastName;
-    @JsonFormat(pattern="MM/dd/yyyy")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate birthdate;

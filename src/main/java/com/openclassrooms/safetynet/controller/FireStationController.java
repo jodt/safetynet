@@ -39,6 +39,7 @@ public class FireStationController {
         return response;
     }
 
+
     @PostMapping
     public ResponseEntity<FireStation> addFireStation(@RequestBody FireStation fireStation) throws FireStationAlreadyExistException {
         logger.info("POST /firestation called to add a new fire station for the address {} with the station's number {}", fireStation.getAddress(), fireStation.getStation());
@@ -46,6 +47,7 @@ public class FireStationController {
         logger.info("Process end successfully");
         return new ResponseEntity<>(fireStation, HttpStatus.CREATED);
     }
+
 
     @PutMapping
     public ResponseEntity<FireStation> updateFireStation(@RequestBody FireStation fireStation) throws FireStationNotFoundException, JsonProcessingException {
@@ -55,6 +57,7 @@ public class FireStationController {
         return new ResponseEntity<>(fireStation, HttpStatus.OK);
     }
 
+
     @DeleteMapping
     public ResponseEntity<Object> deleteFireStationByAddress(@RequestParam String address) throws FireStationNotFoundException {
         logger.info("DELETE /firestation called to delete the fire station for the address {} ", address);
@@ -62,6 +65,7 @@ public class FireStationController {
         logger.info("Process end successfully");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 
     @DeleteMapping("{stationNumber}")
     public ResponseEntity<Object> deleteFireStationsByStationNumber(@PathVariable int stationNumber) throws FireStationNotFoundException {

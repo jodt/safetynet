@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Class represent a fire station
+ *
  * @author Joel DUMORTIER
  */
 @Builder

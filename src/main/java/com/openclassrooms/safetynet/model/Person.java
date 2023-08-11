@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Class represent a person
+ *
  * @author Joel DUMORTIER
  */
 @Builder

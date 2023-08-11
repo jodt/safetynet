@@ -34,8 +34,10 @@ public class PersonServiceImpl implements PersonService {
         this.personMapper = personMapper;
     }
 
+
     /**
      * Get all people
+     *
      * @return a list of person
      */
     public List<Person> getAllPerson() {
@@ -45,9 +47,9 @@ public class PersonServiceImpl implements PersonService {
     public Person addPerson(Person person) throws PersonAlreadyExistException {
         logger.debug("Try to add the person {} {}", person.getFirstName(), person.getLastName());
         Boolean isPersonAlreadyRegistered = this.checkIfPersonAlreadyExist(person);
-        if(isPersonAlreadyRegistered) {
-            logger.error("{} {} is already registered", person.getFirstName(),person.getLastName());
-            throw new PersonAlreadyExistException(person.getFirstName() + " "+ person.getLastName() + " is already registered");
+        if (isPersonAlreadyRegistered) {
+            logger.error("{} {} is already registered", person.getFirstName(), person.getLastName());
+            throw new PersonAlreadyExistException(person.getFirstName() + " " + person.getLastName() + " is already registered");
         } else {
             this.personRepository.addPerson(person);
             logger.debug("Person successfully added");
@@ -56,12 +58,12 @@ public class PersonServiceImpl implements PersonService {
 
     }
 
+
     /**
      * Update a person
      *
      * @param person
      * @return the updated person
-     *
      * @throws PersonNotFoundException if the person is not found
      */
     public Person updatePerson(Person person) throws PersonNotFoundException {
@@ -77,12 +79,12 @@ public class PersonServiceImpl implements PersonService {
         return person;
     }
 
+
     /**
      * Delete a person
      *
      * @param firstName
      * @param lastName
-     *
      * @throws PersonNotFoundException if the person is not found
      */
     public void deletePerson(String firstName, String lastName) throws PersonNotFoundException {
@@ -97,10 +99,8 @@ public class PersonServiceImpl implements PersonService {
      * Method that takes the station number and returns people covered by the fire station
      *
      * @param number
-     *
      * @return an object with a list of people with the following information(firstname,lastname,address, phone and
      * age), and the number of children and adults.
-     *
      * @throws FireStationNotFoundException if the fire station is not found
      */
     public PersonsConcernedByFireStationDTO findPeopleConcernedByFireStation(int number) throws FireStationNotFoundException {
@@ -129,16 +129,15 @@ public class PersonServiceImpl implements PersonService {
         return new PersonsConcernedByFireStationDTO(personWithAddressAndPhoneDTOList, children, adults);
     }
 
+
     /**
      * Method that takes an address and return a list of children with the following
      * information ( firstname, lastname, age and other family members)
      *
      * @param address
-     *
      * @return a list of children
-     *
      * @throws MedicalRecordNotFoundException if medical record is not found
-     * @throws PersonNotFoundException if person is not found
+     * @throws PersonNotFoundException        if person is not found
      */
     public List<PersonWithAgeAndFamilyMembersDTO> findChildrenByAddress(String address) throws MedicalRecordNotFoundException, PersonNotFoundException {
 
@@ -183,16 +182,14 @@ public class PersonServiceImpl implements PersonService {
      * a list of telephone numbers of people covered by the fire station
      *
      * @param number
-     *
      * @return a list of telephone numbers
-     *
      * @throws FireStationNotFoundException
      */
     public List<String> findPhoneNumberByFireStationNumber(int number) throws FireStationNotFoundException {
 
         List<String> addresses = this.fireStationService.getAddressesByStationNumber(number);
 
-        if (addresses.isEmpty()){
+        if (addresses.isEmpty()) {
             logger.error("Fire stations not found with the number " + number);
             throw new FireStationNotFoundException("Fire stations not found with the number " + number);
         } else {
@@ -216,9 +213,7 @@ public class PersonServiceImpl implements PersonService {
      * the number of the fire station for this address.
      *
      * @param address
-     *
      * @return a list of person and the number of the fire station
-     *
      * @throws PersonNotFoundException
      * @throws FireStationNotFoundException
      */
@@ -233,14 +228,13 @@ public class PersonServiceImpl implements PersonService {
         return new FireDTO(personsList, firesStationNumber);
     }
 
+
     /**
      * Method that takes a list of fire station number and returns a list of people with
      * the following information(lastname, phone, age, medications and allergies) sorted by address
      *
      * @param fireStationsNumber a list of fire station number
-     *
      * @return a list of people sorted by address
-     *
      * @throws PersonNotFoundException if person is not found
      */
     public Map<String, List<PersonWithMedicalRecordDTO>> findAllPeopleInFloodCase(List<Integer> fireStationsNumber) throws PersonNotFoundException {
@@ -268,30 +262,27 @@ public class PersonServiceImpl implements PersonService {
         return personsListInFloodCaseDTO;
     }
 
+
     /**
      * Method that takes a firstname and a lastname and return a person with the following
      * information (lastname, address,age,email,medications,allergies)
      *
      * @param firstName
-     *
      * @param lastName
-     *
      * @return a person
-     *
      * @throws PersonNotFoundException if person not found
      */
     public List<PersonInfoDTO> getPersonInfo(String firstName, String lastName) throws PersonNotFoundException {
-        logger.debug("try to find person with firstname {} and lastname {}",firstName,lastName);
+        logger.debug("try to find person with firstname {} and lastname {}", firstName, lastName);
         List<PersonInfoDTO> personInfoDTOList;
         personInfoDTOList = this.personRepository.getPersons().stream()
                 .filter(person -> (person.getFirstName().toLowerCase()).equals(firstName.toLowerCase()) && (person.getLastName().toLowerCase()).equals(lastName.toLowerCase()))
                 .map(person -> createPersonInfoDTO(person))
                 .collect(Collectors.toList());
-        if(personInfoDTOList.isEmpty()){
-            logger.error("Nobody found with firstname {} and lastname {}", firstName,lastName);
-            throw new PersonNotFoundException("Nobody found with firstname " +firstName + " and lastname " + lastName);
-        }
-        else {
+        if (personInfoDTOList.isEmpty()) {
+            logger.error("Nobody found with firstname {} and lastname {}", firstName, lastName);
+            throw new PersonNotFoundException("Nobody found with firstname " + firstName + " and lastname " + lastName);
+        } else {
             logger.debug("Person found successfully");
         }
         return personInfoDTOList;
@@ -302,9 +293,7 @@ public class PersonServiceImpl implements PersonService {
      * Method that takes a city and returns a list of email addresses of everyone in the city
      *
      * @param city
-     *
      * @return a list of email addresses
-     *
      * @throws MailsNotFoundException if mail not found
      */
     public List<String> getMailsByCity(String city) throws MailsNotFoundException {
@@ -327,6 +316,7 @@ public class PersonServiceImpl implements PersonService {
 
     /**
      * Method that takes firstname and lastname and return a person
+     *
      * @param firstName
      * @param lastName
      * @return a person with this firstname and this lastname
@@ -348,9 +338,7 @@ public class PersonServiceImpl implements PersonService {
      * Method that takes an address and returns a list of people living at that address
      *
      * @param address
-     *
      * @return a list of person
-     *
      * @throws PersonNotFoundException if no one was found
      */
     private List<Person> findPersonByAddress(String address) throws PersonNotFoundException {
@@ -364,12 +352,12 @@ public class PersonServiceImpl implements PersonService {
         return personsFound;
     }
 
+
     /**
      * Method that takes a person, retrieves the person's medical record, and creates
      * a DTO which is a person with the following information (lastname,phone,age,medications,allergies)
      *
      * @param person
-     *
      * @return a PersonWithMedicalRecordDTO
      */
     private PersonWithMedicalRecordDTO createPersonWithMedicalRecordDTO(Person person) {
@@ -389,7 +377,6 @@ public class PersonServiceImpl implements PersonService {
      * a DTO which is a person with the following information (firstname,lastname,address,phone,age )
      *
      * @param person
-     *
      * @return a PersonWithAddressAndPhoneDTO
      */
     private PersonWithAddressAndPhoneDTO createPersonWithAddressAndPhoneDTO(Person person) {
@@ -409,7 +396,6 @@ public class PersonServiceImpl implements PersonService {
      * a DTO which is a person with the following information (lastname,address,age,email,medications,allergies)
      *
      * @param person
-     *
      * @return a PersonInfoDTO
      */
     private PersonInfoDTO createPersonInfoDTO(Person person) {
@@ -423,15 +409,15 @@ public class PersonServiceImpl implements PersonService {
         }
     }
 
+
     /**
      * Method that takes a person and checks if they are already registered
      *
      * @param person
-     *
      * @return true if the person is already registered otherwise false
      */
-    private Boolean checkIfPersonAlreadyExist (Person person) {
-        return this.personRepository.findPersonByFirstNameAndLastName(person.getFirstName(),person.getLastName()) != null;
+    private Boolean checkIfPersonAlreadyExist(Person person) {
+        return this.personRepository.findPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName()) != null;
     }
 
 

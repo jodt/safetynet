@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 @Service
 
-public class PersonMapperImpl implements PersonMapper{
-     private final Logger logger = LoggerFactory.getLogger(PersonMapper.class);
+public class PersonMapperImpl implements PersonMapper {
+    private final Logger logger = LoggerFactory.getLogger(PersonMapper.class);
 
     @Override
     public PersonWithAgeAndFamilyMembersDTO asPersonWithAgeDTO(MedicalRecord medicalRecord) {
@@ -30,8 +30,9 @@ public class PersonMapperImpl implements PersonMapper{
         return personWithAgeDTO;
     }
 
+
     @Override
-    public PersonWithAddressAndPhoneDTO asPersonWithAddressAndPhoneDTO(Person person,MedicalRecord medicalRecord) {
+    public PersonWithAddressAndPhoneDTO asPersonWithAddressAndPhoneDTO(Person person, MedicalRecord medicalRecord) {
         logger.debug("Convert person to personWithAddressAndPhoneDTO");
         PersonWithAddressAndPhoneDTO personWithAddressAndPhoneDTO = new PersonWithAddressAndPhoneDTO();
         personWithAddressAndPhoneDTO.setFirstName(person.getFirstName());
@@ -42,6 +43,7 @@ public class PersonMapperImpl implements PersonMapper{
         logger.debug("person convert successfully");
         return personWithAddressAndPhoneDTO;
     }
+
 
     @Override
     public PersonWithMedicalRecordDTO asPersonWithMedicalRecordDTO(Person person, MedicalRecord medicalRecord) {
@@ -56,6 +58,7 @@ public class PersonMapperImpl implements PersonMapper{
         return personWithMedicalRecordDTO;
     }
 
+
     @Override
     public PersonInfoDTO asPersonInfoDTO(Person person, MedicalRecord medicalRecord) {
         logger.debug("Convert person to personInfoDTO");
@@ -68,5 +71,6 @@ public class PersonMapperImpl implements PersonMapper{
         personInfoDTO.setAllergies(medicalRecord.getMedications());
         return personInfoDTO;
     }
+
 
 }
